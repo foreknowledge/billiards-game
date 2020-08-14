@@ -5,8 +5,4 @@
 
     <solid
         android:color="@color/colorWhiteBall"/>
-
-    <size
-        android:width="20dp"
-        android:height="20dp"/>
 </shape>
