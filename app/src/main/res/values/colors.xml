@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
 
+    <color name="colorBackground">#BD8709</color>
     <color name="colorPoolTable">#3498DB</color>
     <color name="colorWhiteBall">@android:color/white</color>
     <color name="colorRedBall">@android:color/holo_red_light</color>
