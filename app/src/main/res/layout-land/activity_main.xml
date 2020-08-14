@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,6 +27,16 @@
         app:layout_constraintBottom_toBottomOf="@id/poolTableBorder"
         app:layout_constraintStart_toStartOf="@id/poolTableBorder"
         app:layout_constraintEnd_toEndOf="@id/poolTableBorder" />
+
+    <View
+        android:id="@+id/whiteBall"
+        android:layout_width="@dimen/ball_size"
+        android:layout_height="@dimen/ball_size"
+        android:background="@drawable/shape_ball"
+        app:layout_constraintBottom_toBottomOf="@id/poolTable"
+        app:layout_constraintEnd_toEndOf="@id/poolTable"
+        app:layout_constraintStart_toStartOf="@id/poolTable"
+        app:layout_constraintTop_toTopOf="@+id/poolTable" />
 
     <Button
         android:id="@+id/button"
