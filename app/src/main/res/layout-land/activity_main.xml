@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <View
-        android:id="@+id/poolTableBorder"
+        android:id="@+id/poolTableEdge"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/colorBackground"
@@ -23,10 +23,10 @@
         android:layout_height="0dp"
         android:layout_margin="10dp"
         android:background="@color/colorPoolTable"
-        app:layout_constraintTop_toTopOf="@id/poolTableBorder"
-        app:layout_constraintBottom_toBottomOf="@id/poolTableBorder"
-        app:layout_constraintStart_toStartOf="@id/poolTableBorder"
-        app:layout_constraintEnd_toEndOf="@id/poolTableBorder" />
+        app:layout_constraintTop_toTopOf="@id/poolTableEdge"
+        app:layout_constraintBottom_toBottomOf="@id/poolTableEdge"
+        app:layout_constraintStart_toStartOf="@id/poolTableEdge"
+        app:layout_constraintEnd_toEndOf="@id/poolTableEdge" />
 
     <View
         android:id="@+id/whiteBall"
