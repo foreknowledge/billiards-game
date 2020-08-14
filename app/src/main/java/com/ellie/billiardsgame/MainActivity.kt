@@ -12,12 +12,38 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 @SuppressLint("ClickableViewAccessibility")
 class MainActivity : AppCompatActivity() {
-    private val gestureDetector by lazy {
-        GestureDetectorCompat(this, object: GestureDetector.SimpleOnGestureListener() {
+    private val ballRadius by lazy {
+        resources.getDimension(R.dimen.ball_size) / 2
+    }
+
+    private lateinit var ballGestureDetector : GestureDetectorCompat
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentViewWithNoStatusBar()
+
+        setTouchEvents()
+    }
+
+    private fun setContentViewWithNoStatusBar() {
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
+        setContentView(R.layout.activity_main)
+    }
+
+    private fun setTouchEvents() {
+        initBallGestureDetector()
+        setBallTouchEvent()
+
+    }
+
+    private fun initBallGestureDetector() {
+        ballGestureDetector = GestureDetectorCompat(this, object: GestureDetector.SimpleOnGestureListener() {
             override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
                 e2?.let { event ->
-                    whiteBall.x = event.rawX - whiteBall.width / 2
-                    whiteBall.y = event.rawY - whiteBall.width / 2
+                    whiteBall.x = event.rawX - ballRadius
+                    whiteBall.y = event.rawY - ballRadius
                 }
 
                 return true
@@ -25,23 +51,10 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setNoStatusBar()
-        setContentView(R.layout.activity_main)
-
+    private fun setBallTouchEvent() {
         whiteBall.setOnTouchListener { v, event ->
-           gestureDetector.onTouchEvent(event)
+            ballGestureDetector.onTouchEvent(event)
             true
         }
-    }
-
-    private fun setNoStatusBar() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN)
-    }
-
-    companion object {
-        private const val TAG = "MainActivity"
     }
 }
