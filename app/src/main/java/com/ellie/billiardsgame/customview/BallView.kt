@@ -10,9 +10,7 @@ import com.ellie.billiardsgame.R
 
 @SuppressLint("ClickableViewAccessibility")
 class BallView : View {
-    private val ballRadius by lazy {
-        resources.getDimension(R.dimen.ball_diameter_size) / 2
-    }
+    private val ballRadius = resources.getDimension(R.dimen.ball_diameter_size) / 2
 
     private var resourceId = 0
     private lateinit var boundaryView: BoundaryView
