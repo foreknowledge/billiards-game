@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="ball_size">25dp</dimen>
+    <dimen name="ball_diameter_size">25dp</dimen>
 </resources>

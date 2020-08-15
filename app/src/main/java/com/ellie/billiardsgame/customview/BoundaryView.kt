@@ -1,13 +1,14 @@
-package com.ellie.billiardsgame
+package com.ellie.billiardsgame.customview
 
+import android.content.Context
+import android.util.AttributeSet
 import android.view.View
 
-class ViewBorder(view: View) {
-    private val top: Int = view.top
-    private val left: Int = view.left
-    private val bottom: Int = view.top + view.height
-    private val right: Int = view.left + view.width
-    
+open class BoundaryView : View {
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
     fun validX(newX: Float, targetWidth: Float): Float {
         return when {
             (newX <= left) -> left.toFloat()
