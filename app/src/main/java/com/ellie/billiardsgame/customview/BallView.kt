@@ -10,7 +10,10 @@ import com.ellie.billiardsgame.R
 
 @SuppressLint("ClickableViewAccessibility")
 class BallView : View {
-    private val ballRadius = resources.getDimension(R.dimen.ball_diameter_size) / 2
+    private var dx: Int = 10
+    private var dy: Int = 10
+    private val ballDiameter = resources.getDimension(R.dimen.ball_diameter_size)
+    private val ballRadius = ballDiameter / 2
 
     private var resourceId = 0
     private lateinit var boundaryView: BoundaryView
@@ -43,10 +46,15 @@ class BallView : View {
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_MOVE) {
-            x = boundaryView.validX(event.rawX - ballRadius, ballRadius * 2)
-            y = boundaryView.validY(event.rawY - ballRadius, ballRadius * 2)
+            x = boundaryView.adjustX(event.rawX - ballRadius, ballDiameter)
+            y = boundaryView.adjustY(event.rawY - ballRadius, ballDiameter)
         }
 
         return true
+    }
+
+    fun move() {
+        x = boundaryView.adjustX(x + dx, ballDiameter) { dx = -dx }
+        y = boundaryView.adjustY(y + dy, ballDiameter) { dy = -dy }
     }
 }

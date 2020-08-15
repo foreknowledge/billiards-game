@@ -9,18 +9,30 @@ open class BoundaryView : View {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun validX(newX: Float, targetWidth: Float): Float {
+    fun adjustX(newX: Float, targetWidth: Float, outside: () -> Unit = {}): Float {
         return when {
-            (newX <= left) -> left.toFloat()
-            (newX >= right - targetWidth) -> right.toFloat() - targetWidth
+            (newX < left) -> {
+                outside()
+                left.toFloat()
+            }
+            (newX > right - targetWidth) -> {
+                outside()
+                right.toFloat() - targetWidth
+            }
             else -> newX
         }
     }
 
-    fun validY(newY: Float, targetHeight: Float): Float {
+    fun adjustY(newY: Float, targetHeight: Float, outside: () -> Unit = {}): Float {
         return when {
-            (newY <= top) -> top.toFloat()
-            (newY >= bottom - targetHeight) -> bottom.toFloat() - targetHeight
+            (newY < top) -> {
+                outside()
+                top.toFloat()
+            }
+            (newY > bottom - targetHeight) -> {
+                outside()
+                bottom.toFloat() - targetHeight
+            }
             else -> newY
         }
     }
