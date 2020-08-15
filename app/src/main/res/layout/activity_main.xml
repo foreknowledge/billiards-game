@@ -6,45 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <View
-        android:id="@+id/poolTableEdge"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/colorBackground"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintDimensionRatio="1:2" />
-
-    <View
-        android:id="@+id/poolTable"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="10dp"
-        android:background="@color/colorPoolTable"
-        app:layout_constraintTop_toTopOf="@id/poolTableEdge"
-        app:layout_constraintBottom_toBottomOf="@id/poolTableEdge"
-        app:layout_constraintStart_toStartOf="@id/poolTableEdge"
-        app:layout_constraintEnd_toEndOf="@id/poolTableEdge" />
-
-    <View
-        android:id="@+id/whiteBall"
-        android:layout_width="@dimen/ball_size"
-        android:layout_height="@dimen/ball_size"
-        android:background="@drawable/shape_ball"
-        app:layout_constraintBottom_toBottomOf="@id/poolTable"
-        app:layout_constraintEnd_toEndOf="@id/poolTable"
-        app:layout_constraintStart_toStartOf="@id/poolTable"
-        app:layout_constraintTop_toTopOf="@+id/poolTable" />
-
-    <Button
-        android:id="@+id/button"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Hello World!"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="Button"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
