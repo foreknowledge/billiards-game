@@ -21,6 +21,12 @@ class MainActivity : AppCompatActivity() {
         setButtonClickListener()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        poolTable.setStartView(whiteBall)
+    }
+
     private fun setContentViewWithNoStatusBar() {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)

@@ -11,6 +11,12 @@ import com.ellie.billiardsgame.R
 
 @SuppressLint("ClickableViewAccessibility")
 class BallView : View {
+    val centerX: Float
+        get() = x + ballRadius
+
+    val centerY: Float
+        get() = y + ballRadius
+
     private var dx: Float = 0f
     private var dy: Float = 0f
     private val ballDiameter = resources.getDimension(R.dimen.ball_diameter_size)
