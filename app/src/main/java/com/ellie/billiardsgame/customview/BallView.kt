@@ -5,13 +5,14 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import com.ellie.billiardsgame.MainActivity
 import com.ellie.billiardsgame.MissingAttributeException
 import com.ellie.billiardsgame.R
 
 @SuppressLint("ClickableViewAccessibility")
 class BallView : View {
-    private var dx: Int = 10
-    private var dy: Int = 10
+    private var dx: Float = 0f
+    private var dy: Float = 0f
     private val ballDiameter = resources.getDimension(R.dimen.ball_diameter_size)
     private val ballRadius = ballDiameter / 2
 
@@ -53,8 +54,21 @@ class BallView : View {
         return true
     }
 
+    fun setPower(dx: Float, dy: Float) {
+        this.dx = dx
+        this.dy = dy
+    }
+
     fun move() {
+        dx -= FRICTION * dx
+        dy -= FRICTION * dy
+
         x = boundaryView.adjustX(x + dx, ballDiameter) { dx = -dx }
         y = boundaryView.adjustY(y + dy, ballDiameter) { dy = -dy }
+    }
+
+    companion object {
+        private const val FRICTION = MainActivity.FRAME_DURATION * 0.0004f
+        private const val MAX_POWER = MainActivity.FRAME_DURATION * 4f
     }
 }

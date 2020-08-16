@@ -11,12 +11,13 @@ import java.util.concurrent.Executors
 @SuppressLint("ClickableViewAccessibility")
 class MainActivity : AppCompatActivity() {
     private var running = false
-    private val executor = Executors.newSingleThreadExecutor()
+    private val executor = Executors.newFixedThreadPool(3)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentViewWithNoStatusBar()
 
+        setWhiteBallPower()
         setButtonClickListener()
     }
 
@@ -25,6 +26,10 @@ class MainActivity : AppCompatActivity() {
         this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         setContentView(R.layout.activity_main)
+    }
+
+    private fun setWhiteBallPower() {
+        whiteBall.setPower(20f, -20f)
     }
 
     private fun setButtonClickListener() {
@@ -45,12 +50,16 @@ class MainActivity : AppCompatActivity() {
         executor.submit {
             while(running) {
                 whiteBall.move()
-                Thread.sleep(10)
+                Thread.sleep(FRAME_DURATION)
             }
         }
     }
 
     private fun stopSimulation() {
         running = false
+    }
+
+    companion object {
+        const val FRAME_DURATION = 10L
     }
 }
