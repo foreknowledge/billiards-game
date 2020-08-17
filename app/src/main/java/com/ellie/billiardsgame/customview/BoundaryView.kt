@@ -3,6 +3,7 @@ package com.ellie.billiardsgame.customview
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
@@ -16,8 +17,9 @@ class BoundaryView : View {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
+        pathEffect = DashPathEffect(floatArrayOf(20f, 20f), 10f)
         color = Color.LTGRAY
-        strokeWidth = 10f
+        strokeWidth = 7f
     }
 
     constructor(context: Context) : super(context)
