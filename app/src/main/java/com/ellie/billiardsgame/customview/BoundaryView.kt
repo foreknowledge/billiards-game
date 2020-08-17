@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import com.ellie.billiardsgame.data.Point
+import kotlin.math.hypot
 
 class BoundaryView : View {
     private var start = Point(0f, 0f)
@@ -31,7 +32,21 @@ class BoundaryView : View {
         end.x = endRawX - x
         end.y = endRawY - y
 
+        cutToMaxLength()
+
         invalidate()
+    }
+
+    private fun cutToMaxLength() {
+        val distance = hypot(start.x - end.x, start.y - end.y)
+        if (distance > MAX_LENGTH) {
+            val ratio = MAX_LENGTH / distance
+            val distanceX = (end.x - start.x) * ratio
+            val distanceY = (end.y - start.y) * ratio
+
+            end.x = start.x + distanceX
+            end.y = start.y + distanceY
+        }
     }
 
     fun removeLine() {
@@ -43,5 +58,9 @@ class BoundaryView : View {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawLine(start.x, start.y, end.x, end.y, paint)
+    }
+
+    companion object {
+        private const val MAX_LENGTH = 1000f
     }
 }
