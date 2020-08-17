@@ -32,11 +32,10 @@
         android:layout_width="@dimen/ball_diameter_size"
         android:layout_height="@dimen/ball_diameter_size"
         android:background="@drawable/shape_ball"
-        app:boundary="@id/poolTable"
-        app:layout_constraintBottom_toBottomOf="@id/poolTable"
-        app:layout_constraintEnd_toEndOf="@id/poolTable"
-        app:layout_constraintStart_toStartOf="@id/poolTable"
-        app:layout_constraintTop_toTopOf="@+id/poolTable" />
+        app:layout_constraintBottom_toBottomOf="@id/poolTableView"
+        app:layout_constraintEnd_toEndOf="@id/poolTableView"
+        app:layout_constraintStart_toStartOf="@id/poolTableView"
+        app:layout_constraintTop_toTopOf="@+id/poolTableView" />
 
     <Button
         android:id="@+id/button"
