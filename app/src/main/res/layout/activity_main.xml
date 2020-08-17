@@ -17,7 +17,7 @@
         app:layout_constraintDimensionRatio="1:2" />
 
     <com.ellie.billiardsgame.customview.BoundaryView
-        android:id="@+id/poolTable"
+        android:id="@+id/poolTableView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="10dp"
@@ -28,7 +28,7 @@
         app:layout_constraintEnd_toEndOf="@id/poolTableEdge" />
 
     <com.ellie.billiardsgame.customview.BallView
-        android:id="@+id/whiteBall"
+        android:id="@+id/whiteBallView"
         android:layout_width="@dimen/ball_diameter_size"
         android:layout_height="@dimen/ball_diameter_size"
         android:background="@drawable/shape_ball"
