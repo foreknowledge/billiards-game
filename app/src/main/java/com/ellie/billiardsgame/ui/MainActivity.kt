@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setPoolTableTouchListener() {
         poolTableView.setOnTouchListener { v, event ->
-            poolTableView.onDrawLineListener.onDrawLine(
+            poolTableView.drawLine(
                 whiteBallView.centerX, whiteBallView.centerY,
                 event.rawX, event.rawY
             )

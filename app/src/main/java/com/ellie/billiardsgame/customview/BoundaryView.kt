@@ -7,7 +7,6 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import com.ellie.billiardsgame.listener.OnDrawLineListener
 
 class BoundaryView : View {
     private var startX: Float = 0f
@@ -26,15 +25,13 @@ class BoundaryView : View {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    val onDrawLineListener = object : OnDrawLineListener {
-        override fun onDrawLine(startRawX: Float, startRawY: Float, endRawX: Float, endRawY: Float) {
-            startX = startRawX - x
-            startY = startRawY - y
-            endX = endRawX - x
-            endY = endRawY - y
+    fun drawLine(startRawX: Float, startRawY: Float, endRawX: Float, endRawY: Float) {
+        startX = startRawX - x
+        startY = startRawY - y
+        endX = endRawX - x
+        endY = endRawY - y
 
-            invalidate()
-        }
+        invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
