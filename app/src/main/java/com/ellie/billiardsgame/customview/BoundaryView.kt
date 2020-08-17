@@ -26,8 +26,10 @@ class BoundaryView : View {
     fun drawLine(startRawX: Float, startRawY: Float, endRawX: Float, endRawY: Float) {
         paint.color = Color.LTGRAY
 
-        start = Point(startRawX - x, startRawY - y)
-        end = Point(endRawX - x, endRawY - y)
+        start.x = startRawX - x
+        start.y = startRawY - y
+        end.x = endRawX - x
+        end.y = endRawY - y
 
         invalidate()
     }
