@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         whiteBall.point.observe(owner, Observer {
             whiteBallView.x = it.x
             whiteBallView.y = it.y
+            poolTableView.removeLine()
         })
     }
 
@@ -77,10 +78,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setPoolTableTouchListener() {
         poolTableView.setOnTouchListener { v, event ->
-            poolTableView.drawLine(
-                whiteBallView.centerX, whiteBallView.centerY,
-                event.rawX, event.rawY
-            )
+            poolTableView.drawLine(whiteBallView.centerX, whiteBallView.centerY, event.rawX, event.rawY)
 
             true
         }
@@ -89,6 +87,7 @@ class MainActivity : AppCompatActivity() {
     private fun setButtonClickListener() {
         button.setOnClickListener {
             if (!running) {
+                poolTableView.removeLine()
                 startSimulation()
                 button.text = getString(R.string.btn_stop)
             } else {

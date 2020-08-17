@@ -7,17 +7,15 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import com.ellie.billiardsgame.data.Point
 
 class BoundaryView : View {
-    private var startX: Float = 0f
-    private var startY: Float = 0f
-    private var endX: Float = 0f
-    private var endY: Float = 0f
+    private var start = Point(0f, 0f)
+    private var end = Point(0f, 0f)
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         pathEffect = DashPathEffect(floatArrayOf(20f, 20f), 10f)
-        color = Color.LTGRAY
         strokeWidth = 7f
     }
 
@@ -26,16 +24,22 @@ class BoundaryView : View {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     fun drawLine(startRawX: Float, startRawY: Float, endRawX: Float, endRawY: Float) {
-        startX = startRawX - x
-        startY = startRawY - y
-        endX = endRawX - x
-        endY = endRawY - y
+        paint.color = Color.LTGRAY
+
+        start = Point(startRawX - x, startRawY - y)
+        end = Point(endRawX - x, endRawY - y)
+
+        invalidate()
+    }
+
+    fun removeLine() {
+        paint.color = Color.TRANSPARENT
 
         invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawLine(startX, startY, endX, endY, paint)
+        canvas.drawLine(start.x, start.y, end.x, end.y, paint)
     }
 }
