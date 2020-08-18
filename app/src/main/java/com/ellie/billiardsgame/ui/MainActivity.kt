@@ -119,13 +119,12 @@ class MainActivity : AppCompatActivity() {
         val slope = if (line.dx == 0f) 0f else line.dy / line.dx
 
         with(mainViewModel.whiteBall) {
-            dx = sqrt((MAX_POWER * ratio) / (1 + slope.pow(2)))
-            if (line.dx < 0) {
-                dx = -dx
-            }
+            dx = getSign(line.dx) * sqrt((MAX_POWER * ratio) / (1 + slope.pow(2)))
             dy = slope * dx
         }
     }
+
+    private fun getSign(dx: Float) = if (dx < 0) (-1) else 1
 
     private fun stopSimulation() {
         running = false
