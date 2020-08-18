@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentViewWithNoStatusBar()
+        addGlobalLayoutListener()
 
         subscribeUI()
         setViewListeners()
@@ -39,6 +40,20 @@ class MainActivity : AppCompatActivity() {
         this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         setContentView(R.layout.activity_main)
+    }
+
+    private fun addGlobalLayoutListener() {
+        parentLayout.viewTreeObserver.addOnGlobalLayoutListener {
+            initDataInViewModel()
+        }
+    }
+
+    private fun initDataInViewModel() {
+        mainViewModel.apply {
+            ballDiameter = whiteBallView.radius * 2
+            setWhiteBallPosition(whiteBallView.x, whiteBallView.y)
+            setBoundary(poolTableView.top, poolTableView.right, poolTableView.bottom, poolTableView.left)
+        }
     }
 
     private fun subscribeUI() = with(mainViewModel) {
@@ -67,18 +82,6 @@ class MainActivity : AppCompatActivity() {
 
             true
         }
-
-        whiteBallView.viewTreeObserver.addOnGlobalLayoutListener {
-            initViewModel()
-        }
-    }
-
-    private fun initViewModel() {
-        mainViewModel.apply {
-            ballDiameter = whiteBallView.radius * 2
-            setWhiteBallPosition(whiteBallView.x, whiteBallView.y)
-            setBoundary(poolTableView.top, poolTableView.right, poolTableView.bottom, poolTableView.left)
-        }
     }
 
     private fun setPoolTableTouchListener() {
@@ -101,17 +104,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startSimulation() {
-        running = true
-        button.text = getString(R.string.btn_stop)
-
         setPower()
-
-        executor.submit {
-            while(running) {
-                mainViewModel.whiteBallUpdate()
-                Thread.sleep(FRAME_DURATION_MS)
-            }
-        }
+        executeSimulation()
     }
 
     private fun setPower() = with(poolTableView) {
@@ -125,6 +119,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getSign(dx: Float) = if (dx < 0) (-1) else 1
+
+    private fun executeSimulation() {
+        running = true
+        button.text = getString(R.string.btn_stop)
+
+        executor.submit {
+            while(running) {
+                mainViewModel.whiteBallUpdate()
+                Thread.sleep(FRAME_DURATION_MS)
+            }
+        }
+    }
 
     private fun stopSimulation() {
         running = false
