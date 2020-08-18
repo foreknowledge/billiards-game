@@ -52,6 +52,8 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.apply {
             ballDiameter = whiteBallView.radius * 2
             setWhiteBallPosition(whiteBallView.x, whiteBallView.y)
+            setRedBall1Position(redBallView1.x, redBallView1.y)
+            setRedBall2Position(redBallView2.x, redBallView2.y)
             setBoundary(poolTableView.top, poolTableView.right, poolTableView.bottom, poolTableView.left)
         }
     }
@@ -61,6 +63,14 @@ class MainActivity : AppCompatActivity() {
         whiteBall.point.observe(owner, Observer {
             whiteBallView.x = it.x
             whiteBallView.y = it.y
+        })
+        redBall1.point.observe(owner, Observer {
+            redBallView1.x = it.x
+            redBallView1.y = it.y
+        })
+        redBall2.point.observe(owner, Observer {
+            redBallView2.x = it.x
+            redBallView2.y = it.y
         })
         curMode.observe(owner, Observer { applyChangedMode(it) })
     }

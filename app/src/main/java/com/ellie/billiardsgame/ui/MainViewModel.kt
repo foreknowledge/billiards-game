@@ -14,8 +14,8 @@ class MainViewModel : ViewModel() {
     var ballDiameter = 0f
 
     val whiteBall = Ball()
-    private val redBall1 = Ball()
-    private val redBall2 = Ball()
+    val redBall1 = Ball()
+    val redBall2 = Ball()
     private var boundary = Boundary()
 
     private val homePositions = arrayListOf(Point(0f, 0f), Point(0f, 0f), Point(0f, 0f))
