@@ -2,7 +2,6 @@ package com.ellie.billiardsgame.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.Window
@@ -11,10 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GestureDetectorCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.ellie.billiardsgame.FRAME_DURATION_MS
-import com.ellie.billiardsgame.MAX_LINE_LENGTH
-import com.ellie.billiardsgame.MAX_POWER
-import com.ellie.billiardsgame.R
+import com.ellie.billiardsgame.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.Executors
 import kotlin.math.pow
@@ -25,11 +21,11 @@ class MainActivity : AppCompatActivity() {
     private val executor = Executors.newFixedThreadPool(3)
 
     private var running = false
-    private val readyModeTouchListener = ReadyModeTouchListener()
-    private val editModeTouchListener = EditModeTouchListener()
-    private val executeModeTouchListener = ExecuteModeTouchListener()
+    private val readyModeActionConductor = ReadyModeActionConductor()
+    private val editModeActionConductor = EditModeActionConductor()
+    private val executeModeActionConductor = ExecuteModeActionConductor()
 
-    private var modeTouchListener: ModeTouchListener = readyModeTouchListener
+    private var modeActionConductor: ModeActionConductor = readyModeActionConductor
 
     private val mainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
@@ -70,7 +66,6 @@ class MainActivity : AppCompatActivity() {
         whiteBall.point.observe(owner, Observer {
             whiteBallView.x = it.x
             whiteBallView.y = it.y
-            lineCanvas.removeLine()
         })
     }
 
@@ -81,64 +76,29 @@ class MainActivity : AppCompatActivity() {
 
     private fun setWhiteBallTouchListener() {
         whiteBallView.setOnTouchListener { v, event ->
-            modeTouchListener.onWhiteBallTouch(event)
+            modeActionConductor.onWhiteBallTouch(event)
         }
     }
 
     private fun setButtonClickListener() {
         button.setOnClickListener {
-            if (!running) {
-                lineCanvas.removeLine()
-                startSimulation()
-            } else {
-                stopSimulation()
-            }
+            modeActionConductor.onButtonClick()
         }
     }
 
-    private fun startSimulation() {
-        setPower()
-        executeSimulation()
-    }
-
-    private fun setPower() = with(lineCanvas) {
-        val ratio = line.length / MAX_LINE_LENGTH
-        val slope = if (line.dx == 0f) 0f else line.dy / line.dx
-
-        with(mainViewModel.whiteBall) {
-            dx = getSign(line.dx) * sqrt((MAX_POWER * ratio) / (1 + slope.pow(2)))
-            dy = slope * dx
-        }
-    }
-
-    private fun getSign(dx: Float) = if (dx < 0) (-1) else 1
-
-    private fun executeSimulation() {
-        running = true
-        button.text = getString(R.string.btn_end)
-
-        executor.submit {
-            while(running) {
-                mainViewModel.whiteBallUpdate()
-                Thread.sleep(FRAME_DURATION_MS)
-            }
-        }
-    }
-
-    private fun stopSimulation() {
-        running = false
-        button.text = getString(R.string.btn_shot)
-    }
-
-    interface ModeTouchListener {
+    interface ModeActionConductor {
+        val btnText: String
         fun onWhiteBallTouch(event: MotionEvent): Boolean
+        fun onButtonClick()
     }
 
-    inner class ReadyModeTouchListener : ModeTouchListener {
+    inner class ReadyModeActionConductor : ModeActionConductor {
+        override val btnText: String by lazy { this@MainActivity.getText(R.string.btn_shot).toString() }
+
         private val gestureDetector by lazy {
             GestureDetectorCompat(this@MainActivity, object : GestureDetector.SimpleOnGestureListener() {
                 override fun onLongPress(e: MotionEvent?) {
-                    Log.d("Billiards", "Long Press")
+                    changeMode(BilliardsMode.EDIT)
                 }
             })
         }
@@ -149,9 +109,45 @@ class MainActivity : AppCompatActivity() {
 
             return true
         }
+
+        override fun onButtonClick() {
+            startSimulation()
+            changeMode(BilliardsMode.EXECUTE)
+        }
+
+        private fun startSimulation() {
+            setPower()
+            executeSimulation()
+        }
+
+        private fun setPower() = with(lineCanvas) {
+            val ratio = line.length / MAX_LINE_LENGTH
+            val slope = if (line.dx == 0f) 0f else line.dy / line.dx
+
+            with(mainViewModel.whiteBall) {
+                dx = getSign(line.dx) * sqrt((MAX_POWER * ratio) / (1 + slope.pow(2)))
+                dy = slope * dx
+            }
+        }
+
+        private fun getSign(dx: Float) = if (dx < 0) (-1) else 1
+
+        private fun executeSimulation() {
+            running = true
+            button.text = getString(R.string.btn_end)
+
+            executor.submit {
+                while(running) {
+                    mainViewModel.whiteBallUpdate()
+                    Thread.sleep(FRAME_DURATION_MS)
+                }
+            }
+        }
     }
 
-    inner class EditModeTouchListener : ModeTouchListener {
+    inner class EditModeActionConductor : ModeActionConductor {
+        override val btnText: String by lazy { this@MainActivity.getText(R.string.btn_ok).toString() }
+
         override fun onWhiteBallTouch(event: MotionEvent): Boolean {
             if (event.action == MotionEvent.ACTION_MOVE) {
                 val x = event.rawX - whiteBallView.radius
@@ -162,9 +158,36 @@ class MainActivity : AppCompatActivity() {
 
             return true
         }
+
+        override fun onButtonClick() {
+            changeMode(BilliardsMode.READY)
+        }
     }
 
-    inner class ExecuteModeTouchListener : ModeTouchListener {
+    inner class ExecuteModeActionConductor : ModeActionConductor {
+        override val btnText: String by lazy { this@MainActivity.getText(R.string.btn_end).toString() }
+
         override fun onWhiteBallTouch(event: MotionEvent) = false
+
+        override fun onButtonClick() {
+            stopSimulation()
+            changeMode(BilliardsMode.READY)
+        }
+
+        private fun stopSimulation() {
+            running = false
+            button.text = getString(R.string.btn_shot)
+        }
+    }
+
+    private fun changeMode(mode: BilliardsMode) {
+        modeActionConductor = when (mode) {
+            BilliardsMode.READY -> readyModeActionConductor
+            BilliardsMode.EDIT -> editModeActionConductor
+            BilliardsMode.EXECUTE -> executeModeActionConductor
+        }
+
+        button.text = modeActionConductor.btnText
+        lineCanvas.removeLine()
     }
 }
