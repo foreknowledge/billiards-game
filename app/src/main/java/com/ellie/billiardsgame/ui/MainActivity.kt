@@ -16,9 +16,10 @@ import kotlin.math.sqrt
 
 @SuppressLint("ClickableViewAccessibility")
 class MainActivity : AppCompatActivity() {
-    private var running = false
     private val executor = Executors.newFixedThreadPool(3)
-    private var modeTouchListener = NormalModeTouchListener()
+
+    private var running = false
+    private var modeTouchListener: ModeTouchListener = ReadyModeTouchListener()
 
     private val mainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
@@ -59,13 +60,13 @@ class MainActivity : AppCompatActivity() {
         whiteBall.point.observe(owner, Observer {
             whiteBallView.x = it.x
             whiteBallView.y = it.y
-            poolTableView.removeLine()
+            lineCanvas.removeLine()
         })
     }
 
     private fun setViewListeners() {
         setWhiteBallTouchListener()
-        setPoolTableTouchListener()
+        setLineCanvasTouchListener()
         setButtonClickListener()
     }
 
@@ -75,16 +76,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setPoolTableTouchListener() {
+    private fun setLineCanvasTouchListener() {
         poolTableView.setOnTouchListener { v, event ->
-            modeTouchListener.onPoolTableTouch(event)
+            modeTouchListener.onLineCanvasTouch(event)
         }
     }
 
     private fun setButtonClickListener() {
         button.setOnClickListener {
             if (!running) {
-                poolTableView.removeLine()
+                lineCanvas.removeLine()
                 startSimulation()
             } else {
                 stopSimulation()
@@ -97,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         executeSimulation()
     }
 
-    private fun setPower() = with(poolTableView) {
+    private fun setPower() = with(lineCanvas) {
         val ratio = line.length / MAX_LINE_LENGTH
         val slope = if (line.dx == 0f) 0f else line.dy / line.dx
 
@@ -126,11 +127,11 @@ class MainActivity : AppCompatActivity() {
         button.text = getString(R.string.btn_start)
     }
 
-    inner class NormalModeTouchListener : ModeTouchListener {
+    inner class ReadyModeTouchListener : ModeTouchListener {
         override fun onWhiteBallTouch(event: MotionEvent) = false
 
-        override fun onPoolTableTouch(event: MotionEvent): Boolean {
-            poolTableView.drawLine(whiteBallView.centerX, whiteBallView.centerY, event.rawX, event.rawY)
+        override fun onLineCanvasTouch(event: MotionEvent): Boolean {
+            lineCanvas.drawLine(whiteBallView.centerX, whiteBallView.centerY, event.rawX, event.rawY)
 
             return true
         }
@@ -148,12 +149,12 @@ class MainActivity : AppCompatActivity() {
             return true
         }
 
-        override fun onPoolTableTouch(event: MotionEvent) = false
+        override fun onLineCanvasTouch(event: MotionEvent) = false
     }
 
     inner class ExecuteModeTouchListener : ModeTouchListener {
         override fun onWhiteBallTouch(event: MotionEvent) = false
 
-        override fun onPoolTableTouch(event: MotionEvent) = false
+        override fun onLineCanvasTouch(event: MotionEvent) = false
     }
 }

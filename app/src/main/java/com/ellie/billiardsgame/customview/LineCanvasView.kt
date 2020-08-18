@@ -10,7 +10,7 @@ import android.view.View
 import com.ellie.billiardsgame.MAX_LINE_LENGTH
 import com.ellie.billiardsgame.data.Line
 
-class BoundaryView : View {
+class LineCanvasView : View {
     val line = Line()
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -29,7 +29,7 @@ class BoundaryView : View {
     }
 
     fun drawLine(startRawX: Float, startRawY: Float, endRawX: Float, endRawY: Float) {
-        paint.color = Color.LTGRAY
+        paint.color = Color.RED
         line.setPoints(startRawX - x, startRawY - y, endRawX - x, endRawY - y)
 
         cutToMaxLength()
