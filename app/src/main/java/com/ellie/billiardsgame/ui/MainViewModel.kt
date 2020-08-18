@@ -1,6 +1,9 @@
 package com.ellie.billiardsgame.ui
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.ellie.billiardsgame.BilliardsMode
 import com.ellie.billiardsgame.FRAME_DURATION_MS
 import com.ellie.billiardsgame.data.Ball
 import com.ellie.billiardsgame.data.Boundary
@@ -14,6 +17,9 @@ class MainViewModel : ViewModel() {
     private val redBall1 = Ball()
     private val redBall2 = Ball()
     private var boundary = Boundary()
+
+    private val _curMode = MutableLiveData(BilliardsMode.READY)
+    val curMode: LiveData<BilliardsMode> = _curMode
 
     private val executor = Executors.newFixedThreadPool(3)
     private var isSimulating = false
@@ -41,7 +47,14 @@ class MainViewModel : ViewModel() {
         whiteBall.move(newX, newY)
     }
 
-    fun startSimulation() {
+    fun changeMode(mode: BilliardsMode) {
+        _curMode.value = mode
+    }
+
+    fun startSimulation(velocity: Point) {
+        whiteBall.dx = velocity.x
+        whiteBall.dy = velocity.y
+
         isSimulating = true
 
         executor.submit {
@@ -65,5 +78,4 @@ class MainViewModel : ViewModel() {
     fun stopSimulation() {
         isSimulating = false
     }
-
 }
