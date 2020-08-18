@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.apply {
             ballDiameter = whiteBallView.radius * 2
             setWhiteBallPosition(whiteBallView.x, whiteBallView.y)
-            setBoundary(poolTableView.top, poolTableEdge.right, poolTableView.bottom, poolTableView.left)
+            setBoundary(poolTableView.top, poolTableView.right, poolTableView.bottom, poolTableView.left)
         }
     }
 
