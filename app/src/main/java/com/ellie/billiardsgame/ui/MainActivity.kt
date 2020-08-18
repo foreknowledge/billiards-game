@@ -11,15 +11,11 @@ import androidx.core.view.GestureDetectorCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ellie.billiardsgame.BilliardsMode
-import com.ellie.billiardsgame.FRAME_DURATION_MS
 import com.ellie.billiardsgame.R
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.concurrent.Executors
 
 @SuppressLint("ClickableViewAccessibility")
 class MainActivity : AppCompatActivity() {
-    private val executor = Executors.newFixedThreadPool(3)
-
     private val readyModeActionConductor = ReadyModeActionConductor()
     private val editModeActionConductor = EditModeActionConductor()
     private val executeModeActionConductor = ExecuteModeActionConductor()
@@ -29,8 +25,6 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
-
-    private var isSimulating = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,13 +106,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onButtonClick() {
-            startSimulation()
-            changeMode(BilliardsMode.EXECUTE)
-        }
-
-        private fun startSimulation() {
             setVelocity()
-            executeSimulation()
+            mainViewModel.startSimulation()
+            changeMode(BilliardsMode.EXECUTE)
         }
 
         private fun setVelocity() = with(mainViewModel.whiteBall) {
@@ -126,18 +116,6 @@ class MainActivity : AppCompatActivity() {
 
             dx = velocity.x
             dy = velocity.y
-        }
-
-        private fun executeSimulation() {
-            isSimulating = true
-            button.text = getString(R.string.btn_end)
-
-            executor.submit {
-                while(isSimulating) {
-                    mainViewModel.whiteBallUpdate()
-                    Thread.sleep(FRAME_DURATION_MS)
-                }
-            }
         }
     }
 
@@ -166,13 +144,8 @@ class MainActivity : AppCompatActivity() {
         override fun onWhiteBallTouch(event: MotionEvent) = false
 
         override fun onButtonClick() {
-            stopSimulation()
+            mainViewModel.stopSimulation()
             changeMode(BilliardsMode.READY)
-        }
-
-        private fun stopSimulation() {
-            isSimulating = false
-            button.text = getString(R.string.btn_shot)
         }
     }
 
