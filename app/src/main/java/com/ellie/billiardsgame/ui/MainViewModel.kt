@@ -42,11 +42,11 @@ class MainViewModel : ViewModel() {
         boundary = Boundary(Point(left.toFloat(), top.toFloat()), Point(right.toFloat(), bottom.toFloat()))
     }
 
-    fun whiteBallUpdate(x: Float, y: Float) {
+    fun updateBallPosition(ball: Ball, x: Float, y: Float) {
         val newX = boundary.adjustX(x, ballDiameter)
         val newY = boundary.adjustY(y, ballDiameter)
 
-        whiteBall.move(newX, newY)
+        ball.move(newX, newY)
     }
 
     fun changeMode(mode: BilliardsMode) {
@@ -62,7 +62,7 @@ class MainViewModel : ViewModel() {
 
         executor.submit {
             while(isSimulating) {
-                whiteBallUpdate()
+                moveWhiteBall()
                 Thread.sleep(FRAME_DURATION_MS)
             }
         }
@@ -74,7 +74,7 @@ class MainViewModel : ViewModel() {
         homePositions[RED2] = redBall2.point.value!!
     }
 
-    private fun whiteBallUpdate() {
+    private fun moveWhiteBall() {
         whiteBall.decreaseVelocityX()
         whiteBall.decreaseVelocityY()
 
