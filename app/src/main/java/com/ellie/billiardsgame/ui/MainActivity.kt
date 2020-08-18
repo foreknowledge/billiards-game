@@ -20,7 +20,6 @@ import java.util.concurrent.Executors
 class MainActivity : AppCompatActivity() {
     private val executor = Executors.newFixedThreadPool(3)
 
-    private var running = false
     private val readyModeActionConductor = ReadyModeActionConductor()
     private val editModeActionConductor = EditModeActionConductor()
     private val executeModeActionConductor = ExecuteModeActionConductor()
@@ -30,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
+
+    private var isSimulating = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,11 +129,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         private fun executeSimulation() {
-            running = true
+            isSimulating = true
             button.text = getString(R.string.btn_end)
 
             executor.submit {
-                while(running) {
+                while(isSimulating) {
                     mainViewModel.whiteBallUpdate()
                     Thread.sleep(FRAME_DURATION_MS)
                 }
@@ -170,7 +171,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         private fun stopSimulation() {
-            running = false
+            isSimulating = false
             button.text = getString(R.string.btn_shot)
         }
     }
