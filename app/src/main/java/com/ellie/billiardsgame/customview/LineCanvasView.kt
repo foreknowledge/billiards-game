@@ -8,10 +8,10 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import com.ellie.billiardsgame.MAX_LINE_LENGTH
-import com.ellie.billiardsgame.data.Line
+import com.ellie.billiardsgame.data.GuideLine
 
 class LineCanvasView : View {
-    val line = Line()
+    val line = GuideLine()
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE

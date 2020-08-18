@@ -10,11 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GestureDetectorCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.ellie.billiardsgame.*
+import com.ellie.billiardsgame.BilliardsMode
+import com.ellie.billiardsgame.FRAME_DURATION_MS
+import com.ellie.billiardsgame.R
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.Executors
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 @SuppressLint("ClickableViewAccessibility")
 class MainActivity : AppCompatActivity() {
@@ -116,21 +116,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         private fun startSimulation() {
-            setPower()
+            setVelocity()
             executeSimulation()
         }
 
-        private fun setPower() = with(lineCanvas) {
-            val ratio = line.length / MAX_LINE_LENGTH
-            val slope = if (line.dx == 0f) 0f else line.dy / line.dx
+        private fun setVelocity() = with(mainViewModel.whiteBall) {
+            val velocity = lineCanvas.line.getVelocity()
 
-            with(mainViewModel.whiteBall) {
-                dx = getSign(line.dx) * sqrt((MAX_POWER * ratio) / (1 + slope.pow(2)))
-                dy = slope * dx
-            }
+            dx = velocity.x
+            dy = velocity.y
         }
-
-        private fun getSign(dx: Float) = if (dx < 0) (-1) else 1
 
         private fun executeSimulation() {
             running = true
