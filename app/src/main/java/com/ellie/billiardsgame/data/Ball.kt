@@ -21,6 +21,10 @@ class Ball{
         _point.postValue(Point(x, y))
     }
 
+    fun move(point: Point) {
+        _point.postValue(point)
+    }
+
     fun changeDirectionX() {
         dx = -dx
     }

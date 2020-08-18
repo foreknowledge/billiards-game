@@ -51,6 +51,7 @@ class LineCanvasView : View {
 
     fun removeLine() {
         paint.color = Color.TRANSPARENT
+        line.setPoints(0f, 0f, 0f, 0f)
 
         invalidate()
     }

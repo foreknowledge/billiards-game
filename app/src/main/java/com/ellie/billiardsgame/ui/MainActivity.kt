@@ -62,6 +62,18 @@ class MainActivity : AppCompatActivity() {
             whiteBallView.x = it.x
             whiteBallView.y = it.y
         })
+        curMode.observe(owner, Observer { applyChangedMode(it) })
+    }
+
+    private fun applyChangedMode(mode: BilliardsMode) {
+        modeActionConductor = when (mode) {
+            BilliardsMode.READY -> readyModeActionConductor
+            BilliardsMode.EDIT -> editModeActionConductor
+            BilliardsMode.EXECUTE -> executeModeActionConductor
+        }
+
+        button.text = modeActionConductor.btnText
+        lineCanvas.removeLine()
     }
 
     private fun setViewListeners() {
@@ -93,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         private val gestureDetector by lazy {
             GestureDetectorCompat(this@MainActivity, object : GestureDetector.SimpleOnGestureListener() {
                 override fun onLongPress(e: MotionEvent?) {
-                    changeMode(BilliardsMode.EDIT)
+                    mainViewModel.changeMode(BilliardsMode.EDIT)
                 }
             })
         }
@@ -106,16 +118,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onButtonClick() {
-            setVelocity()
-            mainViewModel.startSimulation()
-            changeMode(BilliardsMode.EXECUTE)
-        }
-
-        private fun setVelocity() = with(mainViewModel.whiteBall) {
             val velocity = lineCanvas.line.getVelocity()
 
-            dx = velocity.x
-            dy = velocity.y
+            if (velocity.x * velocity.y != 0f) {
+                mainViewModel.startSimulation(velocity)
+                mainViewModel.changeMode(BilliardsMode.EXECUTE)
+            }
         }
     }
 
@@ -134,7 +142,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onButtonClick() {
-            changeMode(BilliardsMode.READY)
+            mainViewModel.changeMode(BilliardsMode.READY)
         }
     }
 
@@ -145,18 +153,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun onButtonClick() {
             mainViewModel.stopSimulation()
-            changeMode(BilliardsMode.READY)
+            mainViewModel.changeMode(BilliardsMode.READY)
         }
-    }
-
-    private fun changeMode(mode: BilliardsMode) {
-        modeActionConductor = when (mode) {
-            BilliardsMode.READY -> readyModeActionConductor
-            BilliardsMode.EDIT -> editModeActionConductor
-            BilliardsMode.EXECUTE -> executeModeActionConductor
-        }
-
-        button.text = modeActionConductor.btnText
-        lineCanvas.removeLine()
     }
 }
