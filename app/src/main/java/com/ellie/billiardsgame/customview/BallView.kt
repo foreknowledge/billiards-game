@@ -1,60 +1,20 @@
 package com.ellie.billiardsgame.customview
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
-import com.ellie.billiardsgame.MissingAttributeException
-import com.ellie.billiardsgame.R
 
-@SuppressLint("ClickableViewAccessibility")
 class BallView : View {
-    private var dx: Int = 10
-    private var dy: Int = 10
-    private val ballDiameter = resources.getDimension(R.dimen.ball_diameter_size)
-    private val ballRadius = ballDiameter / 2
+    val radius: Float
+        get() = width.toFloat() / 2
 
-    private var resourceId = 0
-    private lateinit var boundaryView: BoundaryView
+    val centerX: Float
+        get() = x + radius
+
+    val centerY: Float
+        get() = y + radius
 
     constructor(context: Context) : super(context)
-
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        getBoundaryViewResourceId(attrs)
-    }
-
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        getBoundaryViewResourceId(attrs)
-    }
-
-    private fun getBoundaryViewResourceId(attrs: AttributeSet?) {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.BallView)
-        resourceId = typedArray.getResourceId(R.styleable.BallView_boundary, 0)
-        typedArray.recycle()
-
-        if (resourceId == 0) {
-            throw MissingAttributeException("You must supply a boundary attribute.")
-        }
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-
-        boundaryView = (parent as View).findViewById(resourceId)
-    }
-
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_MOVE) {
-            x = boundaryView.adjustX(event.rawX - ballRadius, ballDiameter)
-            y = boundaryView.adjustY(event.rawY - ballRadius, ballDiameter)
-        }
-
-        return true
-    }
-
-    fun move() {
-        x = boundaryView.adjustX(x + dx, ballDiameter) { dx = -dx }
-        y = boundaryView.adjustY(y + dy, ballDiameter) { dy = -dy }
-    }
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 }
