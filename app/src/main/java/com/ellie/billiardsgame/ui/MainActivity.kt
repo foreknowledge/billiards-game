@@ -2,13 +2,19 @@ package com.ellie.billiardsgame.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
+import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GestureDetectorCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.ellie.billiardsgame.*
+import com.ellie.billiardsgame.FRAME_DURATION_MS
+import com.ellie.billiardsgame.MAX_LINE_LENGTH
+import com.ellie.billiardsgame.MAX_POWER
+import com.ellie.billiardsgame.R
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.Executors
 import kotlin.math.pow
@@ -19,7 +25,11 @@ class MainActivity : AppCompatActivity() {
     private val executor = Executors.newFixedThreadPool(3)
 
     private var running = false
-    private var modeTouchListener: ModeTouchListener = ReadyModeTouchListener()
+    private val readyModeTouchListener = ReadyModeTouchListener()
+    private val editModeTouchListener = EditModeTouchListener()
+    private val executeModeTouchListener = ExecuteModeTouchListener()
+
+    private var modeTouchListener: ModeTouchListener = readyModeTouchListener
 
     private val mainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
@@ -66,19 +76,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setViewListeners() {
         setWhiteBallTouchListener()
-        setLineCanvasTouchListener()
         setButtonClickListener()
     }
 
     private fun setWhiteBallTouchListener() {
         whiteBallView.setOnTouchListener { v, event ->
             modeTouchListener.onWhiteBallTouch(event)
-        }
-    }
-
-    private fun setLineCanvasTouchListener() {
-        poolTableView.setOnTouchListener { v, event ->
-            modeTouchListener.onLineCanvasTouch(event)
         }
     }
 
@@ -112,7 +115,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun executeSimulation() {
         running = true
-        button.text = getString(R.string.btn_stop)
+        button.text = getString(R.string.btn_end)
 
         executor.submit {
             while(running) {
@@ -124,13 +127,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun stopSimulation() {
         running = false
-        button.text = getString(R.string.btn_start)
+        button.text = getString(R.string.btn_shot)
+    }
+
+    interface ModeTouchListener {
+        fun onWhiteBallTouch(event: MotionEvent): Boolean
     }
 
     inner class ReadyModeTouchListener : ModeTouchListener {
-        override fun onWhiteBallTouch(event: MotionEvent) = false
+        private val gestureDetector by lazy {
+            GestureDetectorCompat(this@MainActivity, object : GestureDetector.SimpleOnGestureListener() {
+                override fun onLongPress(e: MotionEvent?) {
+                    Log.d("Billiards", "Long Press")
+                }
+            })
+        }
 
-        override fun onLineCanvasTouch(event: MotionEvent): Boolean {
+        override fun onWhiteBallTouch(event: MotionEvent): Boolean {
+            gestureDetector.onTouchEvent(event)
             lineCanvas.drawLine(whiteBallView.centerX, whiteBallView.centerY, event.rawX, event.rawY)
 
             return true
@@ -148,13 +162,9 @@ class MainActivity : AppCompatActivity() {
 
             return true
         }
-
-        override fun onLineCanvasTouch(event: MotionEvent) = false
     }
 
     inner class ExecuteModeTouchListener : ModeTouchListener {
         override fun onWhiteBallTouch(event: MotionEvent) = false
-
-        override fun onLineCanvasTouch(event: MotionEvent) = false
     }
 }
