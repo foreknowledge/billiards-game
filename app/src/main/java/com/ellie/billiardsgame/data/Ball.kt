@@ -2,14 +2,14 @@ package com.ellie.billiardsgame.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.ellie.billiardsgame.ui.MainActivity.Companion.FRAME_DURATION_MS
+import com.ellie.billiardsgame.FRAME_DURATION_MS
 
 class Ball{
     private val _point = MutableLiveData(Point(0f, 0f))
     val point: LiveData<Point> = _point
 
-    private var dx = DEFAULT_POWER
-    private var dy = -DEFAULT_POWER
+    var dx = DEFAULT_POWER
+    var dy = -DEFAULT_POWER
 
     val nextX: Float
         get() = _point.value!!.x + dx

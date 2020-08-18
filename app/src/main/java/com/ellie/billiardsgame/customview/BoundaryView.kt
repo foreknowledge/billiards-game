@@ -7,6 +7,7 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import com.ellie.billiardsgame.MAX_LINE_LENGTH
 import com.ellie.billiardsgame.data.Line
 
 class BoundaryView : View {
@@ -38,8 +39,8 @@ class BoundaryView : View {
 
     private fun cutToMaxLength() {
         val distance = line.length
-        if (distance > MAX_LENGTH) {
-            val ratio = MAX_LENGTH / distance
+        if (distance > MAX_LINE_LENGTH) {
+            val ratio = MAX_LINE_LENGTH / distance
             val distanceX = line.dx * ratio
             val distanceY = line.dy * ratio
 
@@ -52,9 +53,5 @@ class BoundaryView : View {
         paint.color = Color.TRANSPARENT
 
         invalidate()
-    }
-
-    companion object {
-        private const val MAX_LENGTH = 800f
     }
 }

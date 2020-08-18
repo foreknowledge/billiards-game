@@ -46,8 +46,4 @@ class MainViewModel : ViewModel() {
         whiteBall.move(newX, newY)
     }
 
-    companion object {
-        private const val MAX_POWER = MainActivity.FRAME_DURATION_MS * 4f
-    }
-
 }

@@ -8,6 +8,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.R
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.Executors
@@ -110,9 +111,5 @@ class MainActivity : AppCompatActivity() {
 
     private fun stopSimulation() {
         running = false
-    }
-
-    companion object {
-        const val FRAME_DURATION_MS = 10L
     }
 }
