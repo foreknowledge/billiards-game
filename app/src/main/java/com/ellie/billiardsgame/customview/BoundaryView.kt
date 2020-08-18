@@ -7,12 +7,10 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import com.ellie.billiardsgame.data.Point
-import kotlin.math.hypot
+import com.ellie.billiardsgame.data.Line
 
 class BoundaryView : View {
-    private var start = Point(0f, 0f)
-    private var end = Point(0f, 0f)
+    val line = Line()
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -24,13 +22,14 @@ class BoundaryView : View {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        canvas.drawLines(line.points, paint)
+    }
+
     fun drawLine(startRawX: Float, startRawY: Float, endRawX: Float, endRawY: Float) {
         paint.color = Color.LTGRAY
-
-        start.x = startRawX - x
-        start.y = startRawY - y
-        end.x = endRawX - x
-        end.y = endRawY - y
+        line.setPoints(startRawX - x, startRawY - y, endRawX - x, endRawY - y)
 
         cutToMaxLength()
 
@@ -38,14 +37,14 @@ class BoundaryView : View {
     }
 
     private fun cutToMaxLength() {
-        val distance = hypot(start.x - end.x, start.y - end.y)
+        val distance = line.length
         if (distance > MAX_LENGTH) {
             val ratio = MAX_LENGTH / distance
-            val distanceX = (end.x - start.x) * ratio
-            val distanceY = (end.y - start.y) * ratio
+            val distanceX = line.dx * ratio
+            val distanceY = line.dy * ratio
 
-            end.x = start.x + distanceX
-            end.y = start.y + distanceY
+            line.end.x = line.start.x + distanceX
+            line.end.y = line.start.y + distanceY
         }
     }
 
@@ -55,12 +54,7 @@ class BoundaryView : View {
         invalidate()
     }
 
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        canvas.drawLine(start.x, start.y, end.x, end.y, paint)
-    }
-
     companion object {
-        private const val MAX_LENGTH = 1000f
+        private const val MAX_LENGTH = 800f
     }
 }
