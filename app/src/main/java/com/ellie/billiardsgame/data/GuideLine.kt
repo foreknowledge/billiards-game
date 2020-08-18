@@ -1,8 +1,12 @@
 package com.ellie.billiardsgame.data
 
+import com.ellie.billiardsgame.MAX_LINE_LENGTH
+import com.ellie.billiardsgame.MAX_POWER
 import kotlin.math.hypot
+import kotlin.math.pow
+import kotlin.math.sqrt
 
-class Line {
+class GuideLine {
     var start = Point(0f, 0f)
     var end = Point(0f, 0f)
 
@@ -24,4 +28,16 @@ class Line {
         end.x = endX
         end.y = endY
     }
+
+    fun getVelocity(): Point {
+        val ratio = length / MAX_LINE_LENGTH
+        val slope = if (dx == 0f) 0f else dy / dx
+
+        val velocityX = getSign(dx) * sqrt((MAX_POWER * ratio) / (1 + slope.pow(2)))
+        val velocityY = slope * velocityX
+
+        return Point(velocityX, velocityY)
+    }
+
+    private fun getSign(dx: Float) = if (dx < 0) (-1) else 1
 }
