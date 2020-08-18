@@ -8,10 +8,14 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.ellie.billiardsgame.*
+import com.ellie.billiardsgame.FRAME_DURATION_MS
+import com.ellie.billiardsgame.MAX_LINE_LENGTH
+import com.ellie.billiardsgame.MAX_POWER
 import com.ellie.billiardsgame.R
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.Executors
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 @SuppressLint("ClickableViewAccessibility")
 class MainActivity : AppCompatActivity() {
@@ -90,16 +94,17 @@ class MainActivity : AppCompatActivity() {
             if (!running) {
                 poolTableView.removeLine()
                 startSimulation()
-                button.text = getString(R.string.btn_stop)
             } else {
                 stopSimulation()
-                button.text = getString(R.string.btn_start)
             }
         }
     }
 
     private fun startSimulation() {
         running = true
+        button.text = getString(R.string.btn_stop)
+
+        setPower()
 
         executor.submit {
             while(running) {
@@ -109,7 +114,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setPower() = with(poolTableView) {
+        val ratio = line.length / MAX_LINE_LENGTH
+        val slope = if (line.dx == 0f) 0f else line.dy / line.dx
+
+        with(mainViewModel.whiteBall) {
+            dx = sqrt((MAX_POWER * ratio) / (1 + slope.pow(2)))
+            if (line.dx < 0) {
+                dx = -dx
+            }
+            dy = slope * dx
+        }
+    }
+
     private fun stopSimulation() {
         running = false
+        button.text = getString(R.string.btn_start)
     }
 }
