@@ -18,6 +18,8 @@ class MainViewModel : ViewModel() {
     private val redBall2 = Ball()
     private var boundary = Boundary()
 
+    private val homePositions = arrayListOf(Point(0f, 0f), Point(0f, 0f), Point(0f, 0f))
+
     private val _curMode = MutableLiveData(BilliardsMode.READY)
     val curMode: LiveData<BilliardsMode> = _curMode
 
@@ -56,6 +58,7 @@ class MainViewModel : ViewModel() {
         whiteBall.dy = velocity.y
 
         isSimulating = true
+        captureHomePositions()
 
         executor.submit {
             while(isSimulating) {
@@ -63,6 +66,12 @@ class MainViewModel : ViewModel() {
                 Thread.sleep(FRAME_DURATION_MS)
             }
         }
+    }
+
+    private fun captureHomePositions() {
+        homePositions[WHITE] = whiteBall.point.value!!
+        homePositions[RED1] = redBall1.point.value!!
+        homePositions[RED2] = redBall2.point.value!!
     }
 
     private fun whiteBallUpdate() {
@@ -77,5 +86,18 @@ class MainViewModel : ViewModel() {
 
     fun stopSimulation() {
         isSimulating = false
+        restoreBallPositions()
+    }
+
+    private fun restoreBallPositions() {
+        whiteBall.move(homePositions[WHITE])
+        redBall1.move(homePositions[RED1])
+        redBall2.move(homePositions[RED2])
+    }
+
+    companion object {
+        private const val WHITE = 0
+        private const val RED1 = 1
+        private const val RED2 = 2
     }
 }
