@@ -3,6 +3,8 @@ package com.ellie.billiardsgame.data
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ellie.billiardsgame.FRAME_DURATION_MS
+import com.ellie.billiardsgame.GlobalApplication
+import kotlin.math.hypot
 
 class Ball{
     private val _point = MutableLiveData(Point(0f, 0f))
@@ -47,8 +49,10 @@ class Ball{
         dy -= FRICTION * dy
     }
 
+    fun isCollision(ball: Ball) = hypot(ball.x - x, ball.y - y) < GlobalApplication.ballDiameter
+
     companion object {
-        private const val FRICTION = FRAME_DURATION_MS * 0.0004f
+        private const val FRICTION = FRAME_DURATION_MS * 0.0005f
         private const val DEFAULT_POWER = 20f
     }
 }

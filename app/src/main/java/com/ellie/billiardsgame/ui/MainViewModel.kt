@@ -32,6 +32,8 @@ class MainViewModel : ViewModel() {
         val newX = boundary.adjustX(x)
         val newY = boundary.adjustY(y)
 
+        // TODO - apply ball-ball collision (위치 적용 안되게 막기)
+
         targetBall.update(newX, newY)
     }
 
@@ -66,6 +68,8 @@ class MainViewModel : ViewModel() {
 
         val newX = boundary.adjustX(whiteBall.nextX) { whiteBall.changeDirectionX() }
         val newY = boundary.adjustY(whiteBall.nextY) { whiteBall.changeDirectionY() }
+
+        // TODO - apply ball-ball collision (충돌 모션 적용)
 
         whiteBall.update(newX, newY)
     }
