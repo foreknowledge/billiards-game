@@ -51,9 +51,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun initDataInViewModel() {
         mainViewModel.apply {
-            whiteBall.updatePosition(whiteBallView.x, whiteBallView.y)
-            redBall1.updatePosition(redBallView1.x, redBallView1.y)
-            redBall2.updatePosition(redBallView2.x, redBallView2.y)
+            whiteBall.update(whiteBallView.x, whiteBallView.y)
+            redBall1.update(redBallView1.x, redBallView1.y)
+            redBall2.update(redBallView2.x, redBallView2.y)
             setBoundary(poolTableView.top, poolTableView.right, poolTableView.bottom, poolTableView.left)
         }
     }
@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity() {
                 val y = event.rawY - whiteBallView.radius
 
                 with(mainViewModel) {
-                    whiteBall.updatePosition(x, y)
+                    updatePositionByApplyingCollision(whiteBall, x, y)
                 }
             }
 
@@ -178,9 +178,9 @@ class MainActivity : AppCompatActivity() {
 
                 with(mainViewModel) {
                     if (ballView.id == R.id.redBallView1) {
-                        redBall1.updatePosition(x, y)
+                        updatePositionByApplyingCollision(redBall1, x, y)
                     } else {
-                        redBall2.updatePosition(x, y)
+                        updatePositionByApplyingCollision(redBall2, x, y)
                     }
                 }
             }

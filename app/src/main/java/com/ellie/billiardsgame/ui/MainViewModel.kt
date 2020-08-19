@@ -28,11 +28,11 @@ class MainViewModel : ViewModel() {
         boundary = Boundary(Point(left.toFloat(), top.toFloat()), Point(right.toFloat(), bottom.toFloat()))
     }
 
-    fun Ball.updatePosition(x: Float, y: Float) {
+    fun updatePositionByApplyingCollision(targetBall: Ball, x: Float, y: Float) {
         val newX = boundary.adjustX(x)
         val newY = boundary.adjustY(y)
 
-        update(newX, newY)
+        targetBall.update(newX, newY)
     }
 
     fun changeMode(mode: BilliardsMode) {
