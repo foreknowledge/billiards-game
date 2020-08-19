@@ -54,7 +54,7 @@ class MainViewModel : ViewModel() {
 
         executor.submit {
             while(isSimulating) {
-                moveWhiteBall()
+                moveBalls()
                 Thread.sleep(FRAME_DURATION_MS)
             }
         }
@@ -66,9 +66,13 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private fun moveWhiteBall() = with(whiteBall) {
-        decreaseVelocity()
-        ballCollisionManager.updateAvailablePoint(WHITE, nextX, nextY)
+    private fun moveBalls() {
+        for (i in balls.indices) {
+            with (balls[i]) {
+                decreaseVelocity()
+                ballCollisionManager.updateAvailablePoint(i, nextX, nextY)
+            }
+        }
     }
 
     fun stopSimulation() {

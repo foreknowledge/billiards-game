@@ -14,8 +14,8 @@ class Ball {
     private val y
         get() = point.value!!.y
 
-    var dx = DEFAULT_POWER
-    var dy = -DEFAULT_POWER
+    var dx = 0f
+    var dy = 0f
 
     val nextX: Float
         get() = x + dx
@@ -42,6 +42,5 @@ class Ball {
 
     companion object {
         private const val FRICTION = FRAME_DURATION_MS * 0.0005f
-        private const val DEFAULT_POWER = 20f
     }
 }
