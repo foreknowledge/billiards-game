@@ -19,7 +19,7 @@ class MainViewModel : ViewModel() {
 
     private val balls = listOf(Ball(), Ball(), Ball())
     private val homePositions = listOf(Point(), Point(), Point())
-    private val ballPositionManager = BallPositionManager(balls)
+    private val ballCollisionManager = BallCollisionManager(balls)
 
     private val whiteBall: Ball = balls[WHITE]
     private val redBall1: Ball = balls[RED1]
@@ -30,7 +30,7 @@ class MainViewModel : ViewModel() {
     val redBall2Position = redBall2.point
 
     fun setBoundary(top: Int, right: Int, bottom: Int, left: Int) {
-        ballPositionManager.setBoundary(Boundary(Point(left.toFloat(), top.toFloat()), Point(right.toFloat(), bottom.toFloat())))
+        ballCollisionManager.setBoundary(Boundary(Point(left.toFloat(), top.toFloat()), Point(right.toFloat(), bottom.toFloat())))
     }
 
     fun updateBall(ballId: Int, x: Float, y: Float) {
@@ -38,7 +38,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun updateAvailablePosition(ballId: Int, x: Float, y: Float) {
-        ballPositionManager.updateAvailablePoint(ballId, x, y)
+        ballCollisionManager.updateAvailablePoint(ballId, x, y)
     }
 
     fun changeMode(mode: BilliardsMode) {
@@ -68,7 +68,7 @@ class MainViewModel : ViewModel() {
 
     private fun moveWhiteBall() = with(whiteBall) {
         decreaseVelocity()
-        ballPositionManager.updateAvailablePoint(WHITE, nextX, nextY)
+        ballCollisionManager.updateAvailablePoint(WHITE, nextX, nextY)
     }
 
     fun stopSimulation() {

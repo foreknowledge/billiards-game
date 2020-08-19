@@ -5,7 +5,7 @@ import com.ellie.billiardsgame.data.Boundary
 import com.ellie.billiardsgame.data.Point
 import kotlin.math.hypot
 
-class BallPositionManager(private val balls: List<Ball>) {
+class BallCollisionManager(private val balls: List<Ball>) {
     private var boundary = Boundary()
 
     fun setBoundary(boundary: Boundary) {
@@ -17,6 +17,8 @@ class BallPositionManager(private val balls: List<Ball>) {
 
         if (isAvailable(ballId, adjustedPointToBound)) {
             balls[ballId].update(adjustedPointToBound)
+        } else {
+            // TODO - 충돌 시뮬레이션
         }
     }
 
