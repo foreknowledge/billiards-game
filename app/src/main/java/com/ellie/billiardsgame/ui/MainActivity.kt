@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ellie.billiardsgame.BilliardsMode
 import com.ellie.billiardsgame.R
+import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.customview.BallView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -51,24 +52,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun initDataInViewModel() {
         mainViewModel.apply {
-            whiteBall.update(whiteBallView.x, whiteBallView.y)
-            redBall1.update(redBallView1.x, redBallView1.y)
-            redBall2.update(redBallView2.x, redBallView2.y)
+            updateBall(WHITE, whiteBallView.x, whiteBallView.y)
+            updateBall(RED1, redBallView1.x, redBallView1.y)
+            updateBall(RED2, redBallView2.x, redBallView2.y)
             setBoundary(poolTableView.top, poolTableView.right, poolTableView.bottom, poolTableView.left)
         }
     }
 
     private fun subscribeUI() = with(mainViewModel) {
         val owner = this@MainActivity
-        whiteBall.point.observe(owner, Observer {
+        whiteBallPoint.observe(owner, Observer {
             whiteBallView.x = it.x
             whiteBallView.y = it.y
         })
-        redBall1.point.observe(owner, Observer {
+        redBall1Point.observe(owner, Observer {
             redBallView1.x = it.x
             redBallView1.y = it.y
         })
-        redBall2.point.observe(owner, Observer {
+        redBall2Point.observe(owner, Observer {
             redBallView2.x = it.x
             redBallView2.y = it.y
         })
@@ -164,7 +165,7 @@ class MainActivity : AppCompatActivity() {
                 val y = event.rawY - whiteBallView.radius
 
                 with(mainViewModel) {
-                    updatePositionByApplyingCollision(whiteBall, x, y)
+                    updatePositionByApplyingCollision(WHITE, x, y)
                 }
             }
 
@@ -178,9 +179,9 @@ class MainActivity : AppCompatActivity() {
 
                 with(mainViewModel) {
                     if (ballView.id == R.id.redBallView1) {
-                        updatePositionByApplyingCollision(redBall1, x, y)
+                        updatePositionByApplyingCollision(RED1, x, y)
                     } else {
-                        updatePositionByApplyingCollision(redBall2, x, y)
+                        updatePositionByApplyingCollision(RED2, x, y)
                     }
                 }
             }

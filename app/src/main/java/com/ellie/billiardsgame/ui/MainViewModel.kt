@@ -4,37 +4,46 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ellie.billiardsgame.BilliardsMode
-import com.ellie.billiardsgame.FRAME_DURATION_MS
+import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.data.Ball
 import com.ellie.billiardsgame.data.Boundary
 import com.ellie.billiardsgame.data.Point
 import java.util.concurrent.Executors
 
 class MainViewModel : ViewModel() {
-    val whiteBall = Ball()
-    val redBall1 = Ball()
-    val redBall2 = Ball()
-    private var boundary = Boundary()
-
-    private val homePositions = arrayListOf(Point(), Point(), Point())
-
     private val _curMode = MutableLiveData(BilliardsMode.READY)
     val curMode: LiveData<BilliardsMode> = _curMode
 
     private val executor = Executors.newFixedThreadPool(3)
     private var isSimulating = false
 
+    private val balls = listOf(Ball(), Ball(), Ball())
+    private val homePositions = listOf(Point(), Point(), Point())
+    private var boundary = Boundary()
+
+    private val whiteBall: Ball = balls[WHITE]
+    private val redBall1: Ball = balls[RED1]
+    private val redBall2: Ball = balls[RED2]
+
+    val whiteBallPoint = whiteBall.point
+    val redBall1Point = redBall1.point
+    val redBall2Point = redBall2.point
+
     fun setBoundary(top: Int, right: Int, bottom: Int, left: Int) {
         boundary = Boundary(Point(left.toFloat(), top.toFloat()), Point(right.toFloat(), bottom.toFloat()))
     }
 
-    fun updatePositionByApplyingCollision(targetBall: Ball, x: Float, y: Float) {
+    fun updateBall(ballId: Int, x: Float, y: Float) {
+        balls[ballId].update(x, y)
+    }
+
+    fun updatePositionByApplyingCollision(ballId: Int, x: Float, y: Float) {
         val newX = boundary.adjustX(x)
         val newY = boundary.adjustY(y)
 
         // TODO - apply ball-ball collision (위치 적용 안되게 막기)
 
-        targetBall.update(newX, newY)
+        balls[ballId].update(newX, newY)
     }
 
     fun changeMode(mode: BilliardsMode) {
@@ -57,9 +66,9 @@ class MainViewModel : ViewModel() {
     }
 
     private fun captureBallPositions() {
-        homePositions[WHITE] = whiteBall.point.value!!
-        homePositions[RED1] = redBall1.point.value!!
-        homePositions[RED2] = redBall2.point.value!!
+        for (i in balls.indices) {
+            homePositions[i].update(balls[i].point.value!!)
+        }
     }
 
     private fun moveWhiteBall() {
@@ -80,14 +89,8 @@ class MainViewModel : ViewModel() {
     }
 
     private fun restoreBallPositions() {
-        whiteBall.update(homePositions[WHITE])
-        redBall1.update(homePositions[RED1])
-        redBall2.update(homePositions[RED2])
-    }
-
-    companion object {
-        private const val WHITE = 0
-        private const val RED1 = 1
-        private const val RED2 = 2
+        for (i in balls.indices) {
+            balls[i].update(homePositions[i])
+        }
     }
 }
