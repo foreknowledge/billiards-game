@@ -61,15 +61,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun subscribeUI() = with(mainViewModel) {
         val owner = this@MainActivity
-        whiteBallPoint.observe(owner, Observer {
+        whiteBallPosition.observe(owner, Observer {
             whiteBallView.x = it.x
             whiteBallView.y = it.y
         })
-        redBall1Point.observe(owner, Observer {
+        redBall1Position.observe(owner, Observer {
             redBallView1.x = it.x
             redBallView1.y = it.y
         })
-        redBall2Point.observe(owner, Observer {
+        redBall2Position.observe(owner, Observer {
             redBallView2.x = it.x
             redBallView2.y = it.y
         })

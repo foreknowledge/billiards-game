@@ -25,9 +25,9 @@ class MainViewModel : ViewModel() {
     private val redBall1: Ball = balls[RED1]
     private val redBall2: Ball = balls[RED2]
 
-    val whiteBallPoint = whiteBall.point
-    val redBall1Point = redBall1.point
-    val redBall2Point = redBall2.point
+    val whiteBallPosition = whiteBall.point
+    val redBall1Position = redBall1.point
+    val redBall2Position = redBall2.point
 
     fun setBoundary(top: Int, right: Int, bottom: Int, left: Int) {
         ballPositionManager.setBoundary(Boundary(Point(left.toFloat(), top.toFloat()), Point(right.toFloat(), bottom.toFloat())))
