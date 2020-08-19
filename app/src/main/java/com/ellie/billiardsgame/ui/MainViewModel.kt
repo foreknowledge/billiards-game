@@ -24,17 +24,15 @@ class MainViewModel : ViewModel() {
     private val executor = Executors.newFixedThreadPool(3)
     private var isSimulating = false
 
-    fun Ball.setBallPosition(x: Float, y: Float) = update(x, y)
-
     fun setBoundary(top: Int, right: Int, bottom: Int, left: Int) {
         boundary = Boundary(Point(left.toFloat(), top.toFloat()), Point(right.toFloat(), bottom.toFloat()))
     }
 
-    fun updateBallPosition(ball: Ball, x: Float, y: Float) {
+    fun Ball.updatePosition(x: Float, y: Float) {
         val newX = boundary.adjustX(x)
         val newY = boundary.adjustY(y)
 
-        ball.update(newX, newY)
+        update(newX, newY)
     }
 
     fun changeMode(mode: BilliardsMode) {
