@@ -3,10 +3,10 @@ package com.ellie.billiardsgame.customview
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import com.ellie.billiardsgame.GlobalApplication
 
 class BallView : View {
-    val radius: Float
-        get() = width.toFloat() / 2
+    val radius = GlobalApplication.ballRadius
 
     val centerX: Float
         get() = x + radius

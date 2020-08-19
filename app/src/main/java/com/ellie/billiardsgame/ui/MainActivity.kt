@@ -51,10 +51,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun initDataInViewModel() {
         mainViewModel.apply {
-            ballDiameter = whiteBallView.radius * 2
-            setWhiteBallPosition(whiteBallView.x, whiteBallView.y)
-            setRedBall1Position(redBallView1.x, redBallView1.y)
-            setRedBall2Position(redBallView2.x, redBallView2.y)
+            whiteBall.setBallPosition(whiteBallView.x, whiteBallView.y)
+            redBall1.setBallPosition(redBallView1.x, redBallView1.y)
+            redBall2.setBallPosition(redBallView2.x, redBallView2.y)
             setBoundary(poolTableView.top, poolTableView.right, poolTableView.bottom, poolTableView.left)
         }
     }

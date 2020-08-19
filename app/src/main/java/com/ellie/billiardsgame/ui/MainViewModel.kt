@@ -11,8 +11,6 @@ import com.ellie.billiardsgame.data.Point
 import java.util.concurrent.Executors
 
 class MainViewModel : ViewModel() {
-    var ballDiameter = 0f
-
     val whiteBall = Ball()
     val redBall1 = Ball()
     val redBall2 = Ball()
@@ -26,27 +24,17 @@ class MainViewModel : ViewModel() {
     private val executor = Executors.newFixedThreadPool(3)
     private var isSimulating = false
 
-    fun setWhiteBallPosition(x: Float, y: Float) {
-        whiteBall.move(x, y)
-    }
-
-    fun setRedBall1Position(x: Float, y: Float) {
-        redBall1.move(x, y)
-    }
-
-    fun setRedBall2Position(x: Float, y: Float) {
-        redBall2.move(x, y)
-    }
+    fun Ball.setBallPosition(x: Float, y: Float) = update(x, y)
 
     fun setBoundary(top: Int, right: Int, bottom: Int, left: Int) {
         boundary = Boundary(Point(left.toFloat(), top.toFloat()), Point(right.toFloat(), bottom.toFloat()))
     }
 
     fun updateBallPosition(ball: Ball, x: Float, y: Float) {
-        val newX = boundary.adjustX(x, ballDiameter)
-        val newY = boundary.adjustY(y, ballDiameter)
+        val newX = boundary.adjustX(x)
+        val newY = boundary.adjustY(y)
 
-        ball.move(newX, newY)
+        ball.update(newX, newY)
     }
 
     fun changeMode(mode: BilliardsMode) {
@@ -58,7 +46,7 @@ class MainViewModel : ViewModel() {
         whiteBall.dy = velocity.y
 
         isSimulating = true
-        captureHomePositions()
+        captureBallPositions()
 
         executor.submit {
             while(isSimulating) {
@@ -68,7 +56,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private fun captureHomePositions() {
+    private fun captureBallPositions() {
         homePositions[WHITE] = whiteBall.point.value!!
         homePositions[RED1] = redBall1.point.value!!
         homePositions[RED2] = redBall2.point.value!!
@@ -78,10 +66,10 @@ class MainViewModel : ViewModel() {
         whiteBall.decreaseVelocityX()
         whiteBall.decreaseVelocityY()
 
-        val newX = boundary.adjustX(whiteBall.nextX, ballDiameter) { whiteBall.changeDirectionX() }
-        val newY = boundary.adjustY(whiteBall.nextY, ballDiameter) { whiteBall.changeDirectionY() }
+        val newX = boundary.adjustX(whiteBall.nextX) { whiteBall.changeDirectionX() }
+        val newY = boundary.adjustY(whiteBall.nextY) { whiteBall.changeDirectionY() }
 
-        whiteBall.move(newX, newY)
+        whiteBall.update(newX, newY)
     }
 
     fun stopSimulation() {
@@ -90,9 +78,9 @@ class MainViewModel : ViewModel() {
     }
 
     private fun restoreBallPositions() {
-        whiteBall.move(homePositions[WHITE])
-        redBall1.move(homePositions[RED1])
-        redBall2.move(homePositions[RED2])
+        whiteBall.update(homePositions[WHITE])
+        redBall1.update(homePositions[RED1])
+        redBall2.update(homePositions[RED2])
     }
 
     companion object {
