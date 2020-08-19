@@ -1,8 +1,9 @@
-package com.ellie.billiardsgame
+package com.ellie.billiardsgame.main
 
-import com.ellie.billiardsgame.data.Ball
-import com.ellie.billiardsgame.data.Boundary
-import com.ellie.billiardsgame.data.Point
+import com.ellie.billiardsgame.GlobalApplication
+import com.ellie.billiardsgame.model.Ball
+import com.ellie.billiardsgame.model.Boundary
+import com.ellie.billiardsgame.model.Point
 import kotlin.math.hypot
 
 class BallCollisionManager(private val balls: List<Ball>) {
@@ -15,10 +16,14 @@ class BallCollisionManager(private val balls: List<Ball>) {
     fun updateAvailablePoint(ballId: Int, x: Float, y: Float) {
         val adjustedPointToBound = getAdjustedPointToBound(ballId, x, y)
 
-        if (isAvailable(ballId, adjustedPointToBound)) {
+        val collidedBallId = getCollidedBallId(ballId, adjustedPointToBound)
+
+        if (collidedBallId == -1) {
             balls[ballId].update(adjustedPointToBound)
         } else {
-            // TODO - 충돌 시뮬레이션
+            // 일단 두 공이 충돌난 경우 처리
+            // TODO - 세 공이 충돌난 경우에도 되는지 확인
+            CollisionCalculator(balls[ballId], balls[collidedBallId]).updateVelocity()
         }
     }
 
@@ -31,17 +36,17 @@ class BallCollisionManager(private val balls: List<Ball>) {
         return Point(newX, newY)
     }
 
-    private fun isAvailable(ballId: Int, target: Point): Boolean {
+    private fun getCollidedBallId(ballId: Int, target: Point): Int {
         for (i in balls.indices) {
             if (ballId == i) {
                 continue
             }
             if (isCollision(target, balls[i].point.value!!)) {
-                return false
+                return i
             }
         }
 
-        return true
+        return -1
     }
 
     private fun isCollision(pointA: Point, pointB: Point)

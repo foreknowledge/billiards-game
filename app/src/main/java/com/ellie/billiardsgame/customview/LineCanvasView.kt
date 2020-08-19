@@ -8,7 +8,7 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import com.ellie.billiardsgame.MAX_LINE_LENGTH
-import com.ellie.billiardsgame.data.GuideLine
+import com.ellie.billiardsgame.model.GuideLine
 
 class LineCanvasView : View {
     val line = GuideLine()

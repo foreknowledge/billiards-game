@@ -1,4 +1,4 @@
-package com.ellie.billiardsgame.data
+package com.ellie.billiardsgame.model
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,14 +8,14 @@ class Ball {
     private val _point = MutableLiveData(Point())
     val point: LiveData<Point> = _point
 
-    private val x
+    val x
         get() = point.value!!.x
 
-    private val y
+    val y
         get() = point.value!!.y
 
-    var dx = DEFAULT_POWER
-    var dy = -DEFAULT_POWER
+    var dx = 0f
+    var dy = 0f
 
     val nextX: Float
         get() = x + dx
@@ -25,6 +25,11 @@ class Ball {
 
     fun update(point: Point) {
         _point.postValue(point)
+    }
+
+    fun setVelocity(dx: Float, dy: Float) {
+        this.dx = dx
+        this.dy = dy
     }
 
     fun changeDirectionX() {
@@ -42,6 +47,5 @@ class Ball {
 
     companion object {
         private const val FRICTION = FRAME_DURATION_MS * 0.0005f
-        private const val DEFAULT_POWER = 20f
     }
 }

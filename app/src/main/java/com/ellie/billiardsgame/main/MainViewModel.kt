@@ -1,18 +1,17 @@
-package com.ellie.billiardsgame.ui
+package com.ellie.billiardsgame.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.ellie.billiardsgame.BilliardsMode
 import com.ellie.billiardsgame.*
-import com.ellie.billiardsgame.data.Ball
-import com.ellie.billiardsgame.data.Boundary
-import com.ellie.billiardsgame.data.Point
+import com.ellie.billiardsgame.model.Ball
+import com.ellie.billiardsgame.model.Boundary
+import com.ellie.billiardsgame.model.Point
 import java.util.concurrent.Executors
 
 class MainViewModel : ViewModel() {
-    private val _curMode = MutableLiveData(BilliardsMode.READY)
-    val curMode: LiveData<BilliardsMode> = _curMode
+    private val _curMode = MutableLiveData(GameMode.READY)
+    val curMode: LiveData<GameMode> = _curMode
 
     private val executor = Executors.newFixedThreadPool(3)
     private var isSimulating = false
@@ -41,23 +40,27 @@ class MainViewModel : ViewModel() {
         ballCollisionManager.updateAvailablePoint(ballId, x, y)
     }
 
-    fun changeMode(mode: BilliardsMode) {
+    fun changeMode(mode: GameMode) {
         _curMode.value = mode
     }
 
     fun startSimulation(velocity: Point) {
-        whiteBall.dx = velocity.x
-        whiteBall.dy = velocity.y
-
-        isSimulating = true
+        initBallVelocities(velocity)
         captureBallPositions()
 
         executor.submit {
+            isSimulating = true
             while(isSimulating) {
-                moveWhiteBall()
+                moveBalls()
                 Thread.sleep(FRAME_DURATION_MS)
             }
         }
+    }
+
+    private fun initBallVelocities(velocity: Point) {
+        whiteBall.setVelocity(velocity.x, velocity.y)
+        redBall1.setVelocity(0f, 0f)
+        redBall2.setVelocity(0f, 0f)
     }
 
     private fun captureBallPositions() {
@@ -66,9 +69,13 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private fun moveWhiteBall() = with(whiteBall) {
-        decreaseVelocity()
-        ballCollisionManager.updateAvailablePoint(WHITE, nextX, nextY)
+    private fun moveBalls() {
+        for (i in balls.indices) {
+            with (balls[i]) {
+                decreaseVelocity()
+                ballCollisionManager.updateAvailablePoint(i, nextX, nextY)
+            }
+        }
     }
 
     fun stopSimulation() {
