@@ -8,4 +8,10 @@ data class Point(
         x = point.x
         y = point.y
     }
+
+    operator fun plus(point: Point) = Point(point.x + x, point.y + y)
+
+    operator fun times(scalar: Float) = Point(scalar * x, scalar * y)
+
+    operator fun times(point: Point) = point.x * x + point.y * y
 }

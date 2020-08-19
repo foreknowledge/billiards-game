@@ -8,10 +8,10 @@ class Ball {
     private val _point = MutableLiveData(Point())
     val point: LiveData<Point> = _point
 
-    private val x
+    val x
         get() = point.value!!.x
 
-    private val y
+    val y
         get() = point.value!!.y
 
     var dx = 0f
@@ -25,6 +25,11 @@ class Ball {
 
     fun update(point: Point) {
         _point.postValue(point)
+    }
+
+    fun setVelocity(dx: Float, dy: Float) {
+        this.dx = dx
+        this.dy = dy
     }
 
     fun changeDirectionX() {

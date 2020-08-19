@@ -45,18 +45,22 @@ class MainViewModel : ViewModel() {
     }
 
     fun startSimulation(velocity: Point) {
-        whiteBall.dx = velocity.x
-        whiteBall.dy = velocity.y
-
-        isSimulating = true
+        initBallVelocities(velocity)
         captureBallPositions()
 
         executor.submit {
+            isSimulating = true
             while(isSimulating) {
                 moveBalls()
                 Thread.sleep(FRAME_DURATION_MS)
             }
         }
+    }
+
+    private fun initBallVelocities(velocity: Point) {
+        whiteBall.setVelocity(velocity.x, velocity.y)
+        redBall1.setVelocity(0f, 0f)
+        redBall2.setVelocity(0f, 0f)
     }
 
     private fun captureBallPositions() {
