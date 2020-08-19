@@ -1,32 +1,36 @@
 package com.ellie.billiardsgame.data
 
+import com.ellie.billiardsgame.GlobalApplication
+
 class Boundary(
-    private val leftTopPoint: Point = Point(0f, 0f),
-    private val rightBottomPoint: Point = Point(0f, 0f)
+    private val leftTopPoint: Point = Point(),
+    private val rightBottomPoint: Point = Point()
 ) {
-    fun adjustX(newX: Float, targetWidth: Float, outside: () -> Unit = {}): Float {
+    private val ballDiameter = GlobalApplication.ballDiameter
+
+    fun getAdjustedX(newX: Float, collision: () -> Unit): Float {
         return when {
             (newX < leftTopPoint.x) -> {
-                outside()
+                collision()
                 leftTopPoint.x
             }
-            (newX > rightBottomPoint.x - targetWidth) -> {
-                outside()
-                rightBottomPoint.x - targetWidth
+            (newX > rightBottomPoint.x - ballDiameter) -> {
+                collision()
+                rightBottomPoint.x - ballDiameter
             }
             else -> newX
         }
     }
 
-    fun adjustY(newY: Float, targetHeight: Float, outside: () -> Unit = {}): Float {
+    fun getAdjustedY(newY: Float, collision: () -> Unit): Float {
         return when {
             (newY < leftTopPoint.y) -> {
-                outside()
+                collision()
                 leftTopPoint.y
             }
-            (newY > rightBottomPoint.y - targetHeight) -> {
-                outside()
-                rightBottomPoint.y - targetHeight
+            (newY > rightBottomPoint.y - ballDiameter) -> {
+                collision()
+                rightBottomPoint.y - ballDiameter
             }
             else -> newY
         }

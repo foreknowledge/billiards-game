@@ -4,24 +4,26 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ellie.billiardsgame.FRAME_DURATION_MS
 
-class Ball{
-    private val _point = MutableLiveData(Point(0f, 0f))
+class Ball {
+    private val _point = MutableLiveData(Point())
     val point: LiveData<Point> = _point
+
+    private val x
+        get() = point.value!!.x
+
+    private val y
+        get() = point.value!!.y
 
     var dx = DEFAULT_POWER
     var dy = -DEFAULT_POWER
 
     val nextX: Float
-        get() = _point.value!!.x + dx
+        get() = x + dx
 
     val nextY: Float
-        get() = _point.value!!.y + dy
+        get() = y + dy
 
-    fun move(x: Float, y: Float) {
-        _point.postValue(Point(x, y))
-    }
-
-    fun move(point: Point) {
+    fun update(point: Point) {
         _point.postValue(point)
     }
 
@@ -33,16 +35,13 @@ class Ball{
         dy = -dy
     }
 
-    fun decreaseVelocityX() {
+    fun decreaseVelocity() {
         dx -= FRICTION * dx
-    }
-
-    fun decreaseVelocityY() {
         dy -= FRICTION * dy
     }
 
     companion object {
-        private const val FRICTION = FRAME_DURATION_MS * 0.0004f
+        private const val FRICTION = FRAME_DURATION_MS * 0.0005f
         private const val DEFAULT_POWER = 20f
     }
 }

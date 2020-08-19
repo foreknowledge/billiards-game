@@ -4,49 +4,41 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ellie.billiardsgame.BilliardsMode
-import com.ellie.billiardsgame.FRAME_DURATION_MS
+import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.data.Ball
 import com.ellie.billiardsgame.data.Boundary
 import com.ellie.billiardsgame.data.Point
 import java.util.concurrent.Executors
 
 class MainViewModel : ViewModel() {
-    var ballDiameter = 0f
-
-    val whiteBall = Ball()
-    private val redBall1 = Ball()
-    private val redBall2 = Ball()
-    private var boundary = Boundary()
-
-    private val homePositions = arrayListOf(Point(0f, 0f), Point(0f, 0f), Point(0f, 0f))
-
     private val _curMode = MutableLiveData(BilliardsMode.READY)
     val curMode: LiveData<BilliardsMode> = _curMode
 
     private val executor = Executors.newFixedThreadPool(3)
     private var isSimulating = false
 
-    fun setWhiteBallPosition(x: Float, y: Float) {
-        whiteBall.move(x, y)
-    }
+    private val balls = listOf(Ball(), Ball(), Ball())
+    private val homePositions = listOf(Point(), Point(), Point())
+    private val ballCollisionManager = BallCollisionManager(balls)
 
-    fun setRedBall1Position(x: Float, y: Float) {
-        redBall1.move(x, y)
-    }
+    private val whiteBall: Ball = balls[WHITE]
+    private val redBall1: Ball = balls[RED1]
+    private val redBall2: Ball = balls[RED2]
 
-    fun setRedBall2Position(x: Float, y: Float) {
-        redBall2.move(x, y)
-    }
+    val whiteBallPosition = whiteBall.point
+    val redBall1Position = redBall1.point
+    val redBall2Position = redBall2.point
 
     fun setBoundary(top: Int, right: Int, bottom: Int, left: Int) {
-        boundary = Boundary(Point(left.toFloat(), top.toFloat()), Point(right.toFloat(), bottom.toFloat()))
+        ballCollisionManager.setBoundary(Boundary(Point(left.toFloat(), top.toFloat()), Point(right.toFloat(), bottom.toFloat())))
     }
 
-    fun whiteBallUpdate(x: Float, y: Float) {
-        val newX = boundary.adjustX(x, ballDiameter)
-        val newY = boundary.adjustY(y, ballDiameter)
+    fun updateBall(ballId: Int, x: Float, y: Float) {
+        balls[ballId].update(Point(x, y))
+    }
 
-        whiteBall.move(newX, newY)
+    fun updateAvailablePosition(ballId: Int, x: Float, y: Float) {
+        ballCollisionManager.updateAvailablePoint(ballId, x, y)
     }
 
     fun changeMode(mode: BilliardsMode) {
@@ -58,30 +50,25 @@ class MainViewModel : ViewModel() {
         whiteBall.dy = velocity.y
 
         isSimulating = true
-        captureHomePositions()
+        captureBallPositions()
 
         executor.submit {
             while(isSimulating) {
-                whiteBallUpdate()
+                moveWhiteBall()
                 Thread.sleep(FRAME_DURATION_MS)
             }
         }
     }
 
-    private fun captureHomePositions() {
-        homePositions[WHITE] = whiteBall.point.value!!
-        homePositions[RED1] = redBall1.point.value!!
-        homePositions[RED2] = redBall2.point.value!!
+    private fun captureBallPositions() {
+        for (i in balls.indices) {
+            homePositions[i].update(balls[i].point.value!!)
+        }
     }
 
-    private fun whiteBallUpdate() {
-        whiteBall.decreaseVelocityX()
-        whiteBall.decreaseVelocityY()
-
-        val newX = boundary.adjustX(whiteBall.nextX, ballDiameter) { whiteBall.changeDirectionX() }
-        val newY = boundary.adjustY(whiteBall.nextY, ballDiameter) { whiteBall.changeDirectionY() }
-
-        whiteBall.move(newX, newY)
+    private fun moveWhiteBall() = with(whiteBall) {
+        decreaseVelocity()
+        ballCollisionManager.updateAvailablePoint(WHITE, nextX, nextY)
     }
 
     fun stopSimulation() {
@@ -90,14 +77,8 @@ class MainViewModel : ViewModel() {
     }
 
     private fun restoreBallPositions() {
-        whiteBall.move(homePositions[WHITE])
-        redBall1.move(homePositions[RED1])
-        redBall2.move(homePositions[RED2])
-    }
-
-    companion object {
-        private const val WHITE = 0
-        private const val RED1 = 1
-        private const val RED2 = 2
+        for (i in balls.indices) {
+            balls[i].update(homePositions[i])
+        }
     }
 }

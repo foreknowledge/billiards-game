@@ -33,10 +33,38 @@
         android:layout_width="@dimen/ball_diameter_size"
         android:layout_height="@dimen/ball_diameter_size"
         android:background="@drawable/shape_ball"
+        android:backgroundTint="@color/colorWhiteBall"
         app:layout_constraintBottom_toBottomOf="@id/poolTableView"
         app:layout_constraintEnd_toEndOf="@id/poolTableView"
         app:layout_constraintStart_toStartOf="@id/poolTableView"
-        app:layout_constraintTop_toTopOf="@+id/poolTableView" />
+        app:layout_constraintTop_toTopOf="@+id/poolTableView"
+        app:layout_constraintVertical_bias="0.7" />
+
+    <com.ellie.billiardsgame.customview.BallView
+        android:id="@+id/redBallView1"
+        android:layout_width="@dimen/ball_diameter_size"
+        android:layout_height="@dimen/ball_diameter_size"
+        android:background="@drawable/shape_ball"
+        android:backgroundTint="@color/colorRedBall"
+        app:layout_constraintBottom_toBottomOf="@id/poolTableView"
+        app:layout_constraintEnd_toEndOf="@id/poolTableView"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toStartOf="@id/poolTableView"
+        app:layout_constraintTop_toTopOf="@+id/poolTableView"
+        app:layout_constraintVertical_bias="0.4" />
+
+    <com.ellie.billiardsgame.customview.BallView
+        android:id="@+id/redBallView2"
+        android:layout_width="@dimen/ball_diameter_size"
+        android:layout_height="@dimen/ball_diameter_size"
+        android:background="@drawable/shape_ball"
+        android:backgroundTint="@color/colorRedBall"
+        app:layout_constraintBottom_toBottomOf="@id/poolTableView"
+        app:layout_constraintEnd_toEndOf="@id/poolTableView"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintStart_toStartOf="@id/poolTableView"
+        app:layout_constraintTop_toTopOf="@+id/poolTableView"
+        app:layout_constraintVertical_bias="0.2" />
 
     <com.ellie.billiardsgame.customview.LineCanvasView
         android:id="@+id/lineCanvas"
