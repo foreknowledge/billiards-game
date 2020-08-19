@@ -66,8 +66,8 @@ class MainViewModel : ViewModel() {
         whiteBall.decreaseVelocityX()
         whiteBall.decreaseVelocityY()
 
-        val newX = boundary.adjustX(whiteBall.nextX) { whiteBall.changeDirectionX() }
-        val newY = boundary.adjustY(whiteBall.nextY) { whiteBall.changeDirectionY() }
+        val newX = boundary.adjustX(whiteBall.nextX, collision = { whiteBall.changeDirectionX() })
+        val newY = boundary.adjustY(whiteBall.nextY, collision = { whiteBall.changeDirectionY() })
 
         // TODO - apply ball-ball collision (충돌 모션 적용)
 

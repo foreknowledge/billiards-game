@@ -49,7 +49,7 @@ class Ball {
         dy -= FRICTION * dy
     }
 
-    fun isCollision(ball: Ball) = hypot(ball.x - x, ball.y - y) < GlobalApplication.ballDiameter
+    fun isCollision(x: Float, y: Float) = hypot(this.x - x, this.y - y) < GlobalApplication.ballDiameter
 
     companion object {
         private const val FRICTION = FRAME_DURATION_MS * 0.0005f
