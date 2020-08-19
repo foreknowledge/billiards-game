@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() {
                 val y = event.rawY - whiteBallView.radius
 
                 with(mainViewModel) {
-                    updatePositionByApplyingCollision(WHITE, x, y)
+                    updateAvailablePosition(WHITE, x, y)
                 }
             }
 
@@ -179,9 +179,9 @@ class MainActivity : AppCompatActivity() {
 
                 with(mainViewModel) {
                     if (ballView.id == R.id.redBallView1) {
-                        updatePositionByApplyingCollision(RED1, x, y)
+                        updateAvailablePosition(RED1, x, y)
                     } else {
-                        updatePositionByApplyingCollision(RED2, x, y)
+                        updateAvailablePosition(RED2, x, y)
                     }
                 }
             }

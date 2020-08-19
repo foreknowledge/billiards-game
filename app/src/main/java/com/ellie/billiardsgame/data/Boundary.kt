@@ -8,7 +8,7 @@ class Boundary(
 ) {
     private val ballDiameter = GlobalApplication.ballDiameter
 
-    fun adjustX(newX: Float, collision: () -> Unit = {}): Float {
+    fun getAdjustedX(newX: Float, collision: () -> Unit): Float {
         return when {
             (newX < leftTopPoint.x) -> {
                 collision()
@@ -22,7 +22,7 @@ class Boundary(
         }
     }
 
-    fun adjustY(newY: Float, collision: () -> Unit = {}): Float {
+    fun getAdjustedY(newY: Float, collision: () -> Unit): Float {
         return when {
             (newY < leftTopPoint.y) -> {
                 collision()
