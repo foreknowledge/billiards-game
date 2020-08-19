@@ -1,4 +1,4 @@
-package com.ellie.billiardsgame.data
+package com.ellie.billiardsgame.model
 
 data class Point(
     var x: Float = 0f,

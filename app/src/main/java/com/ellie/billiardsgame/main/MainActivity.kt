@@ -1,4 +1,4 @@
-package com.ellie.billiardsgame.ui
+package com.ellie.billiardsgame.main
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GestureDetectorCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.ellie.billiardsgame.BilliardsMode
 import com.ellie.billiardsgame.R
 import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.customview.BallView
@@ -76,11 +75,11 @@ class MainActivity : AppCompatActivity() {
         curMode.observe(owner, Observer { applyChangedMode(it) })
     }
 
-    private fun applyChangedMode(mode: BilliardsMode) {
+    private fun applyChangedMode(mode: GameMode) {
         modeActionConductor = when (mode) {
-            BilliardsMode.READY -> readyModeActionConductor
-            BilliardsMode.EDIT -> editModeActionConductor
-            BilliardsMode.EXECUTE -> executeModeActionConductor
+            GameMode.READY -> readyModeActionConductor
+            GameMode.EDIT -> editModeActionConductor
+            GameMode.EXECUTE -> executeModeActionConductor
         }
 
         button.text = modeActionConductor.btnText
@@ -128,7 +127,7 @@ class MainActivity : AppCompatActivity() {
         private val gestureDetector by lazy {
             GestureDetectorCompat(this@MainActivity, object : GestureDetector.SimpleOnGestureListener() {
                 override fun onLongPress(e: MotionEvent?) {
-                    mainViewModel.changeMode(BilliardsMode.EDIT)
+                    mainViewModel.changeMode(GameMode.EDIT)
                 }
             })
         }
@@ -151,7 +150,7 @@ class MainActivity : AppCompatActivity() {
 
             if (velocity.x * velocity.y != 0f) {
                 mainViewModel.startSimulation(velocity)
-                mainViewModel.changeMode(BilliardsMode.EXECUTE)
+                mainViewModel.changeMode(GameMode.EXECUTE)
             }
         }
     }
@@ -190,7 +189,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onButtonClick() {
-            mainViewModel.changeMode(BilliardsMode.READY)
+            mainViewModel.changeMode(GameMode.READY)
         }
     }
 
@@ -203,7 +202,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun onButtonClick() {
             mainViewModel.stopSimulation()
-            mainViewModel.changeMode(BilliardsMode.READY)
+            mainViewModel.changeMode(GameMode.READY)
         }
     }
 }

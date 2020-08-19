@@ -1,18 +1,17 @@
-package com.ellie.billiardsgame.ui
+package com.ellie.billiardsgame.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.ellie.billiardsgame.BilliardsMode
 import com.ellie.billiardsgame.*
-import com.ellie.billiardsgame.data.Ball
-import com.ellie.billiardsgame.data.Boundary
-import com.ellie.billiardsgame.data.Point
+import com.ellie.billiardsgame.model.Ball
+import com.ellie.billiardsgame.model.Boundary
+import com.ellie.billiardsgame.model.Point
 import java.util.concurrent.Executors
 
 class MainViewModel : ViewModel() {
-    private val _curMode = MutableLiveData(BilliardsMode.READY)
-    val curMode: LiveData<BilliardsMode> = _curMode
+    private val _curMode = MutableLiveData(GameMode.READY)
+    val curMode: LiveData<GameMode> = _curMode
 
     private val executor = Executors.newFixedThreadPool(3)
     private var isSimulating = false
@@ -41,7 +40,7 @@ class MainViewModel : ViewModel() {
         ballCollisionManager.updateAvailablePoint(ballId, x, y)
     }
 
-    fun changeMode(mode: BilliardsMode) {
+    fun changeMode(mode: GameMode) {
         _curMode.value = mode
     }
 

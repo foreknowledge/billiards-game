@@ -1,8 +1,9 @@
-package com.ellie.billiardsgame
+package com.ellie.billiardsgame.main
 
-import com.ellie.billiardsgame.data.Ball
-import com.ellie.billiardsgame.data.Boundary
-import com.ellie.billiardsgame.data.Point
+import com.ellie.billiardsgame.GlobalApplication
+import com.ellie.billiardsgame.model.Ball
+import com.ellie.billiardsgame.model.Boundary
+import com.ellie.billiardsgame.model.Point
 import kotlin.math.hypot
 
 class BallCollisionManager(private val balls: List<Ball>) {

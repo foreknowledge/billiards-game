@@ -1,4 +1,4 @@
-package com.ellie.billiardsgame.data
+package com.ellie.billiardsgame.model
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
