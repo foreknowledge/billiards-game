@@ -16,7 +16,7 @@ class MainViewModel : ViewModel() {
     val redBall2 = Ball()
     private var boundary = Boundary()
 
-    private val homePositions = arrayListOf(Point(0f, 0f), Point(0f, 0f), Point(0f, 0f))
+    private val homePositions = arrayListOf(Point(), Point(), Point())
 
     private val _curMode = MutableLiveData(BilliardsMode.READY)
     val curMode: LiveData<BilliardsMode> = _curMode

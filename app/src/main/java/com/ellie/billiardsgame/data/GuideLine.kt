@@ -7,8 +7,8 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 class GuideLine {
-    var start = Point(0f, 0f)
-    var end = Point(0f, 0f)
+    var start = Point()
+    var end = Point()
 
     val points: FloatArray
         get() = floatArrayOf(start.x, start.y, end.x, end.y)

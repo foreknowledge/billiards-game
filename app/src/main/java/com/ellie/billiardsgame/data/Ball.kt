@@ -6,8 +6,8 @@ import com.ellie.billiardsgame.FRAME_DURATION_MS
 import com.ellie.billiardsgame.GlobalApplication
 import kotlin.math.hypot
 
-class Ball{
-    private val _point = MutableLiveData(Point(0f, 0f))
+class Ball {
+    private val _point = MutableLiveData(Point())
     val point: LiveData<Point> = _point
 
     private val x
