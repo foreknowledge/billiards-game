@@ -20,7 +20,7 @@ import kotlin.math.hypot
 
 @SuppressLint("ClickableViewAccessibility")
 class MainActivity : AppCompatActivity() {
-    private var flingOn = false
+    private var flingMode = false
 
     private val readyModeActionConductor = ReadyModeActionConductor()
     private val editModeActionConductor = EditModeActionConductor()
@@ -123,14 +123,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setFlingButtonClickListener() {
         flingButton.setOnClickListener {
-            flingOn = !flingOn
+            flingMode = !flingMode
 
-            if (flingOn) {
-                val btnColor = getColor(R.color.colorOnButton)
-                changFlingButtonState(R.string.btn_fling_on, btnColor)
+            if (flingMode) {
+                changFlingButtonState(R.string.btn_fling_on, getColor(R.color.colorOnButton))
             } else {
-                val btnColor = getColor(R.color.colorDefaultButton)
-                changFlingButtonState(R.string.btn_fling_off, btnColor)
+                changFlingButtonState(R.string.btn_fling_off, getColor(R.color.colorDefaultButton))
             }
 
             lineCanvas.removeLine()
@@ -171,7 +169,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
-                    if (flingOn) {
+                    if (flingMode) {
                         val velocityPerFrame = Point(velocityX, velocityY).times(0.001f * FRAME_DURATION_MS)
 
                         val velocitySize = hypot(velocityPerFrame.x, velocityPerFrame.y)
@@ -198,7 +196,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun onWhiteBallTouch(event: MotionEvent): Boolean {
             whiteBallGestureDetector.onTouchEvent(event)
-            if (!flingOn) {
+            if (!flingMode) {
                 lineCanvas.drawLine(whiteBallView.centerX, whiteBallView.centerY, event.rawX, event.rawY)
             }
 
