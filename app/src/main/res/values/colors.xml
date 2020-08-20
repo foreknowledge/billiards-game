@@ -9,7 +9,10 @@
     <color name="colorWhiteBall">@android:color/white</color>
     <color name="colorRedBall">@android:color/holo_red_light</color>
 
-    <color name="colorReadyButton">#EAEAEA</color>
+    <color name="colorDefaultButton">#EAEAEA</color>
+    <color name="colorOnButton">#43D0EF</color>
+
+    <color name="colorReadyButton">@color/colorDefaultButton</color>
     <color name="colorShotButton">#FA5F66</color>
     <color name="colorEditButton">#F9F776</color>
 </resources>
