@@ -206,7 +206,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onModeButtonClick() {
-            val velocity = lineCanvas.line.getVelocity()
+            val velocity = lineCanvas.getVelocity()
 
             if (velocity.x * velocity.y != 0f) {
                 mainViewModel.startSimulation(velocity)

@@ -21,7 +21,7 @@ class BallCollisionManager(private val balls: List<Ball>) {
         if (collidedBallId == -1) {
             balls[ballId].update(adjustedPointToBound)
         } else {
-            CollisionCalculator(balls[ballId], balls[collidedBallId]).updateVelocity()
+            CollisionCalculator.applyCollisionVelocity(balls[ballId], balls[collidedBallId])
         }
     }
 

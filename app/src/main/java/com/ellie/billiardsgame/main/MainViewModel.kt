@@ -12,7 +12,6 @@ import kotlin.math.abs
 
 class MainViewModel : ViewModel() {
     private val _curGameMode = MutableLiveData(GameMode.READY)
-    val curGameMode: LiveData<GameMode> = _curGameMode
 
     private val executor = Executors.newFixedThreadPool(3)
     private var isSimulating = false
@@ -24,6 +23,8 @@ class MainViewModel : ViewModel() {
     private val whiteBall: Ball = balls[WHITE]
     private val redBall1: Ball = balls[RED1]
     private val redBall2: Ball = balls[RED2]
+
+    val curGameMode: LiveData<GameMode> = _curGameMode
 
     val whiteBallPosition = whiteBall.point
     val redBall1Position = redBall1.point
