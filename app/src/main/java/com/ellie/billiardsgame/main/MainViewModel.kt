@@ -3,14 +3,12 @@ package com.ellie.billiardsgame.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.ellie.billiardsgame.FRAME_DURATION_MS
-import com.ellie.billiardsgame.RED1
-import com.ellie.billiardsgame.RED2
-import com.ellie.billiardsgame.WHITE
+import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.model.Ball
 import com.ellie.billiardsgame.model.Boundary
 import com.ellie.billiardsgame.model.Point
 import java.util.concurrent.Executors
+import kotlin.math.abs
 
 class MainViewModel : ViewModel() {
     private val _curMode = MutableLiveData(GameMode.READY)
@@ -55,6 +53,7 @@ class MainViewModel : ViewModel() {
             isSimulating = true
             while(isSimulating) {
                 moveBalls()
+                endSimulationIfAllBallsStopped()
                 Thread.sleep(FRAME_DURATION_MS)
             }
         }
@@ -80,6 +79,24 @@ class MainViewModel : ViewModel() {
             }
         }
     }
+
+    private fun endSimulationIfAllBallsStopped() {
+        if (noMovingBall()) {
+            isSimulating = false
+            changeMode(GameMode.READY)
+        }
+    }
+
+    private fun noMovingBall(): Boolean {
+        balls.forEach { ball ->
+            if (abs(ball.dx) >= STOP_THRESHOLD || abs(ball.dy) >= STOP_THRESHOLD) {
+                return false
+            }
+        }
+
+        return true
+    }
+
     fun endSimulationAndRestorePositions() {
         isSimulating = false
         restoreBallPositions()
