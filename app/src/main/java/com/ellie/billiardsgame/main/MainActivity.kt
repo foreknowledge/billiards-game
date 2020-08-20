@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorReadyButton, null) }
 
         private val redBallGestureDetector by lazy {
-            GestureDetectorCompat(this@MainActivity, object : GestureDetector.SimpleOnGestureListener() {
+            GestureDetectorCompat(this@MainActivity, object: GestureDetector.SimpleOnGestureListener() {
                 override fun onDoubleTap(e: MotionEvent?): Boolean {
                     mainViewModel.changeGameMode(GameMode.EDIT)
                     return true
@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         private val whiteBallGestureDetector by lazy {
-            GestureDetectorCompat(this@MainActivity, object : GestureDetector.SimpleOnGestureListener() {
+            GestureDetectorCompat(this@MainActivity, object: GestureDetector.SimpleOnGestureListener() {
                 override fun onDoubleTap(e: MotionEvent?): Boolean {
                     mainViewModel.changeGameMode(GameMode.EDIT)
                     return true
