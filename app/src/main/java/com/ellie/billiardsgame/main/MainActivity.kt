@@ -6,24 +6,27 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.Window
 import android.view.WindowManager
+import androidx.annotation.ColorInt
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GestureDetectorCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.ellie.billiardsgame.R
-import com.ellie.billiardsgame.RED1
-import com.ellie.billiardsgame.RED2
-import com.ellie.billiardsgame.WHITE
+import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.customview.BallView
+import com.ellie.billiardsgame.model.Point
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.hypot
 
 @SuppressLint("ClickableViewAccessibility")
 class MainActivity : AppCompatActivity() {
+    private var flingMode = false
+
     private val readyModeActionConductor = ReadyModeActionConductor()
     private val editModeActionConductor = EditModeActionConductor()
     private val executeModeActionConductor = ExecuteModeActionConductor()
 
-    private var modeActionConductor: ModeActionConductor = readyModeActionConductor
+    private var gameModeActionConductor: GameModeActionConductor = readyModeActionConductor
 
     private val mainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
@@ -74,93 +77,143 @@ class MainActivity : AppCompatActivity() {
             redBallView2.x = it.x
             redBallView2.y = it.y
         })
-        curMode.observe(owner, Observer { applyChangedMode(it) })
+        curGameMode.observe(owner, Observer { applyChangedMode(it) })
     }
 
     private fun applyChangedMode(mode: GameMode) {
-        modeActionConductor = when (mode) {
+        gameModeActionConductor = when (mode) {
             GameMode.READY -> readyModeActionConductor
             GameMode.EDIT -> editModeActionConductor
             GameMode.EXECUTE -> executeModeActionConductor
         }
 
-        button.text = modeActionConductor.btnText
-        button.setBackgroundColor(modeActionConductor.btnColor)
+        modeButton.text = gameModeActionConductor.btnText
+        modeButton.setBackgroundColor(gameModeActionConductor.btnColor)
         lineCanvas.removeLine()
     }
 
     private fun setViewListeners() {
         setWhiteBallTouchListener()
         setRedBallTouchListener()
-        setButtonClickListener()
+        setModeButtonClickListener()
+        setFlingButtonClickListener()
     }
 
     private fun setWhiteBallTouchListener() {
         whiteBallView.setOnTouchListener { v, event ->
-            modeActionConductor.onWhiteBallTouch(event)
+            gameModeActionConductor.onWhiteBallTouch(event)
         }
     }
 
     private fun setRedBallTouchListener() {
         redBallView1.setOnTouchListener { v, event ->
-            modeActionConductor.onRedBallTouch(v as BallView, event)
+            gameModeActionConductor.onRedBallTouch(v as BallView, event)
         }
 
         redBallView2.setOnTouchListener { v, event ->
-            modeActionConductor.onRedBallTouch(v as BallView, event)
+            gameModeActionConductor.onRedBallTouch(v as BallView, event)
         }
     }
 
-    private fun setButtonClickListener() {
-        button.setOnClickListener {
-            modeActionConductor.onButtonClick()
+    private fun setModeButtonClickListener() {
+        modeButton.setOnClickListener {
+            gameModeActionConductor.onModeButtonClick()
         }
     }
 
-    interface ModeActionConductor {
+    private fun setFlingButtonClickListener() {
+        flingButton.setOnClickListener {
+            flingMode = !flingMode
+
+            if (flingMode) {
+                changFlingButtonState(R.string.btn_fling_on, getColor(R.color.colorOnButton))
+            } else {
+                changFlingButtonState(R.string.btn_fling_off, getColor(R.color.colorDefaultButton))
+            }
+
+            lineCanvas.removeLine()
+        }
+    }
+
+    private fun changFlingButtonState(@StringRes textResId: Int, @ColorInt color: Int) {
+        flingButton.text = getText(textResId)
+        flingButton.setBackgroundColor(color)
+    }
+
+    interface GameModeActionConductor {
         val btnText: String
         val btnColor: Int
         fun onWhiteBallTouch(event: MotionEvent): Boolean
         fun onRedBallTouch(ballView: BallView, event: MotionEvent): Boolean
-        fun onButtonClick()
+        fun onModeButtonClick()
     }
 
-    inner class ReadyModeActionConductor : ModeActionConductor {
+    inner class ReadyModeActionConductor : GameModeActionConductor {
         override val btnText: String by lazy { this@MainActivity.getText(R.string.btn_shot).toString() }
         override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorReadyButton, null) }
 
-        private val gestureDetector by lazy {
-            GestureDetectorCompat(this@MainActivity, object : GestureDetector.SimpleOnGestureListener() {
-                override fun onLongPress(e: MotionEvent?) {
-                    mainViewModel.changeMode(GameMode.EDIT)
+        private val redBallGestureDetector by lazy {
+            GestureDetectorCompat(this@MainActivity, object: GestureDetector.SimpleOnGestureListener() {
+                override fun onDoubleTap(e: MotionEvent?): Boolean {
+                    mainViewModel.changeGameMode(GameMode.EDIT)
+                    return true
+                }
+            })
+        }
+
+        private val whiteBallGestureDetector by lazy {
+            GestureDetectorCompat(this@MainActivity, object: GestureDetector.SimpleOnGestureListener() {
+                override fun onDoubleTap(e: MotionEvent?): Boolean {
+                    mainViewModel.changeGameMode(GameMode.EDIT)
+                    return true
+                }
+
+                override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
+                    if (flingMode) {
+                        val velocityPerFrame = Point(velocityX, velocityY).times(0.001f * FRAME_DURATION_MS)
+
+                        val velocitySize = hypot(velocityPerFrame.x, velocityPerFrame.y)
+                        if (velocitySize > MAX_POWER) {
+                            val ratio = MAX_POWER / velocitySize
+                            velocityPerFrame.x *= ratio
+                            velocityPerFrame.y *= ratio
+                        }
+
+                        mainViewModel.startSimulation(Point(velocityPerFrame.x, velocityPerFrame.y))
+                        mainViewModel.changeGameMode(GameMode.EXECUTE)
+                    }
+
+                    return true
                 }
             })
         }
 
         override fun onRedBallTouch(ballView: BallView, event: MotionEvent): Boolean {
-            gestureDetector.onTouchEvent(event)
+            redBallGestureDetector.onTouchEvent(event)
 
             return true
         }
 
         override fun onWhiteBallTouch(event: MotionEvent): Boolean {
-            gestureDetector.onTouchEvent(event)
-            lineCanvas.drawLine(whiteBallView.centerX, whiteBallView.centerY, event.rawX, event.rawY)
+            whiteBallGestureDetector.onTouchEvent(event)
+            if (!flingMode) {
+                lineCanvas.drawLine(whiteBallView.centerX, whiteBallView.centerY, event.rawX, event.rawY)
+            }
 
             return true
         }
 
-        override fun onButtonClick() {
-            val velocity = lineCanvas.line.getVelocity()
+        override fun onModeButtonClick() {
+            val velocity = lineCanvas.getVelocity()
 
             if (velocity.x * velocity.y != 0f) {
                 mainViewModel.startSimulation(velocity)
-                mainViewModel.changeMode(GameMode.EXECUTE)
+                mainViewModel.changeGameMode(GameMode.EXECUTE)
             }
         }
     }
 
-    inner class EditModeActionConductor : ModeActionConductor {
+    inner class EditModeActionConductor : GameModeActionConductor {
         override val btnText: String by lazy { this@MainActivity.getText(R.string.btn_ok).toString() }
         override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorEditButton, null) }
 
@@ -194,12 +247,12 @@ class MainActivity : AppCompatActivity() {
             return true
         }
 
-        override fun onButtonClick() {
-            mainViewModel.changeMode(GameMode.READY)
+        override fun onModeButtonClick() {
+            mainViewModel.changeGameMode(GameMode.READY)
         }
     }
 
-    inner class ExecuteModeActionConductor : ModeActionConductor {
+    inner class ExecuteModeActionConductor : GameModeActionConductor {
         override val btnText: String by lazy { this@MainActivity.getText(R.string.btn_end).toString() }
         override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorShotButton, null) }
 
@@ -207,9 +260,9 @@ class MainActivity : AppCompatActivity() {
 
         override fun onRedBallTouch(ballView: BallView, event: MotionEvent) = false
 
-        override fun onButtonClick() {
+        override fun onModeButtonClick() {
             mainViewModel.endSimulationAndRestorePositions()
-            mainViewModel.changeMode(GameMode.READY)
+            mainViewModel.changeGameMode(GameMode.READY)
         }
     }
 }

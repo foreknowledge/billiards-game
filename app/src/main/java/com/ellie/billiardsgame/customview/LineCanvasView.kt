@@ -11,7 +11,7 @@ import com.ellie.billiardsgame.MAX_LINE_LENGTH
 import com.ellie.billiardsgame.model.GuideLine
 
 class LineCanvasView : View {
-    val line = GuideLine()
+    private val line = GuideLine()
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -29,7 +29,7 @@ class LineCanvasView : View {
     }
 
     fun drawLine(startRawX: Float, startRawY: Float, endRawX: Float, endRawY: Float) {
-        paint.color = Color.RED
+        paint.color = Color.CYAN
         line.setPoints(startRawX - x, startRawY - y, endRawX - x, endRawY - y)
 
         cutToMaxLength()
@@ -55,4 +55,6 @@ class LineCanvasView : View {
 
         invalidate()
     }
+
+    fun getVelocity() = line.getVelocity()
 }

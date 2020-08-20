@@ -21,9 +21,7 @@ class BallCollisionManager(private val balls: List<Ball>) {
         if (collidedBallId == -1) {
             balls[ballId].update(adjustedPointToBound)
         } else {
-            // 일단 두 공이 충돌난 경우 처리
-            // TODO - 세 공이 충돌난 경우에도 되는지 확인
-            CollisionCalculator(balls[ballId], balls[collidedBallId]).updateVelocity()
+            CollisionCalculator.applyCollisionVelocity(balls[ballId], balls[collidedBallId])
         }
     }
 
