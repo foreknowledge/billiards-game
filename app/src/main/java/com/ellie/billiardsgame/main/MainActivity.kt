@@ -16,6 +16,7 @@ import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.customview.BallView
 import com.ellie.billiardsgame.model.Point
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.hypot
 
 @SuppressLint("ClickableViewAccessibility")
 class MainActivity : AppCompatActivity() {
@@ -169,10 +170,16 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
                     if (flingOn) {
-                        val velocityPerFrameX = velocityX / 1000f * FRAME_DURATION_MS
-                        val velocityPerFrameY = velocityY / 1000f * FRAME_DURATION_MS
+                        val velocityPerFrame = Point(velocityX, velocityY).times(0.001f * FRAME_DURATION_MS)
 
-                        mainViewModel.startSimulation(Point(velocityPerFrameX, velocityPerFrameY))
+                        val velocitySize = hypot(velocityPerFrame.x, velocityPerFrame.y)
+                        if (velocitySize > MAX_POWER) {
+                            val ratio = MAX_POWER / velocitySize
+                            velocityPerFrame.x *= ratio
+                            velocityPerFrame.y *= ratio
+                        }
+
+                        mainViewModel.startSimulation(Point(velocityPerFrame.x, velocityPerFrame.y))
                         mainViewModel.changeGameMode(GameMode.EXECUTE)
                     }
 
