@@ -201,7 +201,7 @@ class MainActivity : AppCompatActivity() {
         override fun onRedBallTouch(ballView: BallView, event: MotionEvent) = false
 
         override fun onButtonClick() {
-            mainViewModel.stopSimulation()
+            mainViewModel.endSimulationAndRestorePositions()
             mainViewModel.changeMode(GameMode.READY)
         }
     }

@@ -3,7 +3,10 @@ package com.ellie.billiardsgame.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.ellie.billiardsgame.*
+import com.ellie.billiardsgame.FRAME_DURATION_MS
+import com.ellie.billiardsgame.RED1
+import com.ellie.billiardsgame.RED2
+import com.ellie.billiardsgame.WHITE
 import com.ellie.billiardsgame.model.Ball
 import com.ellie.billiardsgame.model.Boundary
 import com.ellie.billiardsgame.model.Point
@@ -41,11 +44,11 @@ class MainViewModel : ViewModel() {
     }
 
     fun changeMode(mode: GameMode) {
-        _curMode.value = mode
+        _curMode.postValue(mode)
     }
 
     fun startSimulation(velocity: Point) {
-        initBallVelocities(velocity)
+        initAllBallsVelocity(velocity)
         captureBallPositions()
 
         executor.submit {
@@ -57,7 +60,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private fun initBallVelocities(velocity: Point) {
+    private fun initAllBallsVelocity(velocity: Point) {
         whiteBall.setVelocity(velocity.x, velocity.y)
         redBall1.setVelocity(0f, 0f)
         redBall2.setVelocity(0f, 0f)
@@ -77,8 +80,7 @@ class MainViewModel : ViewModel() {
             }
         }
     }
-
-    fun stopSimulation() {
+    fun endSimulationAndRestorePositions() {
         isSimulating = false
         restoreBallPositions()
     }
