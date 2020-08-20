@@ -5,7 +5,15 @@ import android.util.AttributeSet
 import android.view.View
 import com.ellie.billiardsgame.GlobalApplication
 
+/**
+ * 당구공 Custom View
+ */
 class BallView : View {
+
+    //----------------------------------------------------------
+    // Public interface
+    //
+
     val radius = GlobalApplication.ballRadius
 
     val centerX: Float

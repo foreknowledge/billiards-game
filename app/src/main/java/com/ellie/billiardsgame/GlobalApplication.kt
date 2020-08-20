@@ -4,6 +4,11 @@ import android.app.Application
 import android.content.Context
 
 class GlobalApplication : Application() {
+
+    //----------------------------------------------------------
+    // Public interface.
+    //
+
     override fun onCreate() {
         super.onCreate()
         APP_CONTEXT = applicationContext
