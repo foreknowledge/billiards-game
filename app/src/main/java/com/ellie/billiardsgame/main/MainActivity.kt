@@ -156,16 +156,18 @@ class MainActivity : AppCompatActivity() {
 
         private val redBallGestureDetector by lazy {
             GestureDetectorCompat(this@MainActivity, object : GestureDetector.SimpleOnGestureListener() {
-                override fun onLongPress(e: MotionEvent?) {
+                override fun onDoubleTap(e: MotionEvent?): Boolean {
                     mainViewModel.changeGameMode(GameMode.EDIT)
+                    return true
                 }
             })
         }
 
         private val whiteBallGestureDetector by lazy {
             GestureDetectorCompat(this@MainActivity, object : GestureDetector.SimpleOnGestureListener() {
-                override fun onLongPress(e: MotionEvent?) {
+                override fun onDoubleTap(e: MotionEvent?): Boolean {
                     mainViewModel.changeGameMode(GameMode.EDIT)
+                    return true
                 }
 
                 override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
