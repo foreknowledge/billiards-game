@@ -11,7 +11,9 @@ import androidx.core.view.GestureDetectorCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ellie.billiardsgame.R
-import com.ellie.billiardsgame.*
+import com.ellie.billiardsgame.RED1
+import com.ellie.billiardsgame.RED2
+import com.ellie.billiardsgame.WHITE
 import com.ellie.billiardsgame.customview.BallView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -83,6 +85,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         button.text = modeActionConductor.btnText
+        button.setBackgroundColor(modeActionConductor.btnColor)
         lineCanvas.removeLine()
     }
 
@@ -116,6 +119,7 @@ class MainActivity : AppCompatActivity() {
 
     interface ModeActionConductor {
         val btnText: String
+        val btnColor: Int
         fun onWhiteBallTouch(event: MotionEvent): Boolean
         fun onRedBallTouch(ballView: BallView, event: MotionEvent): Boolean
         fun onButtonClick()
@@ -123,6 +127,7 @@ class MainActivity : AppCompatActivity() {
 
     inner class ReadyModeActionConductor : ModeActionConductor {
         override val btnText: String by lazy { this@MainActivity.getText(R.string.btn_shot).toString() }
+        override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorReadyButton, null) }
 
         private val gestureDetector by lazy {
             GestureDetectorCompat(this@MainActivity, object : GestureDetector.SimpleOnGestureListener() {
@@ -157,6 +162,7 @@ class MainActivity : AppCompatActivity() {
 
     inner class EditModeActionConductor : ModeActionConductor {
         override val btnText: String by lazy { this@MainActivity.getText(R.string.btn_ok).toString() }
+        override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorEditButton, null) }
 
         override fun onWhiteBallTouch(event: MotionEvent): Boolean {
             if (event.action == MotionEvent.ACTION_MOVE) {
@@ -195,6 +201,7 @@ class MainActivity : AppCompatActivity() {
 
     inner class ExecuteModeActionConductor : ModeActionConductor {
         override val btnText: String by lazy { this@MainActivity.getText(R.string.btn_end).toString() }
+        override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorShotButton, null) }
 
         override fun onWhiteBallTouch(event: MotionEvent) = false
 

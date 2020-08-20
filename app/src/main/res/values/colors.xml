@@ -8,4 +8,8 @@
     <color name="colorPoolTable">#3498DB</color>
     <color name="colorWhiteBall">@android:color/white</color>
     <color name="colorRedBall">@android:color/holo_red_light</color>
+
+    <color name="colorReadyButton">#EAEAEA</color>
+    <color name="colorShotButton">#FA5F66</color>
+    <color name="colorEditButton">#F9F776</color>
 </resources>
