@@ -29,7 +29,7 @@ class LineCanvasView : View {
     }
 
     fun drawLine(startRawX: Float, startRawY: Float, endRawX: Float, endRawY: Float) {
-        paint.color = Color.RED
+        paint.color = Color.CYAN
         line.setPoints(startRawX - x, startRawY - y, endRawX - x, endRawY - y)
 
         cutToMaxLength()
