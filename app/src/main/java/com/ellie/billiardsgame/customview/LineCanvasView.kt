@@ -11,7 +11,7 @@ import com.ellie.billiardsgame.MAX_LINE_LENGTH
 import com.ellie.billiardsgame.model.GuideLine
 
 class LineCanvasView : View {
-    private val line = GuideLine()
+    private val guideLine = GuideLine()
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -25,12 +25,12 @@ class LineCanvasView : View {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawLines(line.points, paint)
+        canvas.drawLines(guideLine.points, paint)
     }
 
     fun drawLine(startRawX: Float, startRawY: Float, endRawX: Float, endRawY: Float) {
         paint.color = Color.CYAN
-        line.setPoints(startRawX - x, startRawY - y, endRawX - x, endRawY - y)
+        guideLine.setPoints(startRawX - x, startRawY - y, endRawX - x, endRawY - y)
 
         cutToMaxLength()
 
@@ -38,23 +38,23 @@ class LineCanvasView : View {
     }
 
     private fun cutToMaxLength() {
-        val distance = line.length
+        val distance = guideLine.length
         if (distance > MAX_LINE_LENGTH) {
             val ratio = MAX_LINE_LENGTH / distance
-            val distanceX = line.dx * ratio
-            val distanceY = line.dy * ratio
+            val distanceX = guideLine.dx * ratio
+            val distanceY = guideLine.dy * ratio
 
-            line.end.x = line.start.x + distanceX
-            line.end.y = line.start.y + distanceY
+            guideLine.end.x = guideLine.start.x + distanceX
+            guideLine.end.y = guideLine.start.y + distanceY
         }
     }
 
     fun removeLine() {
         paint.color = Color.TRANSPARENT
-        line.setPoints(0f, 0f, 0f, 0f)
+        guideLine.setPoints(0f, 0f, 0f, 0f)
 
         invalidate()
     }
 
-    fun getVelocity() = line.getVelocity()
+    fun getVelocity() = guideLine.getVelocity()
 }
