@@ -153,7 +153,15 @@ class MainActivity : AppCompatActivity() {
         override val btnText: String by lazy { this@MainActivity.getText(R.string.btn_shot).toString() }
         override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorReadyButton, null) }
 
-        private val gestureDetector by lazy {
+        private val redBallGestureDetector by lazy {
+            GestureDetectorCompat(this@MainActivity, object : GestureDetector.SimpleOnGestureListener() {
+                override fun onLongPress(e: MotionEvent?) {
+                    mainViewModel.changeGameMode(GameMode.EDIT)
+                }
+            })
+        }
+
+        private val whiteBallGestureDetector by lazy {
             GestureDetectorCompat(this@MainActivity, object : GestureDetector.SimpleOnGestureListener() {
                 override fun onLongPress(e: MotionEvent?) {
                     mainViewModel.changeGameMode(GameMode.EDIT)
@@ -174,13 +182,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onRedBallTouch(ballView: BallView, event: MotionEvent): Boolean {
-            gestureDetector.onTouchEvent(event)
+            redBallGestureDetector.onTouchEvent(event)
 
             return true
         }
 
         override fun onWhiteBallTouch(event: MotionEvent): Boolean {
-            gestureDetector.onTouchEvent(event)
+            whiteBallGestureDetector.onTouchEvent(event)
             if (!flingOn) {
                 lineCanvas.drawLine(whiteBallView.centerX, whiteBallView.centerY, event.rawX, event.rawY)
             }
