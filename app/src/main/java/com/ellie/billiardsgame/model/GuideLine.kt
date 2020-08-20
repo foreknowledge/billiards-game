@@ -33,7 +33,7 @@ class GuideLine {
         val ratio = length / MAX_LINE_LENGTH
         val slope = if (dx == 0f) 0f else dy / dx
 
-        val velocityX = getSign(dx) * sqrt((MAX_POWER * ratio) / (1 + slope.pow(2)))
+        val velocityX = getSign(dx) * sqrt((MAX_POWER * ratio).pow(2) / (1 + slope.pow(2)))
         val velocityY = slope * velocityX
 
         return Point(velocityX, velocityY)
