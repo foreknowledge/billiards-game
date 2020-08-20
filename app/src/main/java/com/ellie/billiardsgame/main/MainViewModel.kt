@@ -11,8 +11,8 @@ import java.util.concurrent.Executors
 import kotlin.math.abs
 
 class MainViewModel : ViewModel() {
-    private val _curMode = MutableLiveData(GameMode.READY)
-    val curMode: LiveData<GameMode> = _curMode
+    private val _curGameMode = MutableLiveData(GameMode.READY)
+    val curGameMode: LiveData<GameMode> = _curGameMode
 
     private val executor = Executors.newFixedThreadPool(3)
     private var isSimulating = false
@@ -41,8 +41,8 @@ class MainViewModel : ViewModel() {
         ballCollisionManager.updateAvailablePoint(ballId, x, y)
     }
 
-    fun changeMode(mode: GameMode) {
-        _curMode.postValue(mode)
+    fun changeGameMode(gameMode: GameMode) {
+        _curGameMode.postValue(gameMode)
     }
 
     fun startSimulation(velocity: Point) {
@@ -83,7 +83,7 @@ class MainViewModel : ViewModel() {
     private fun endSimulationIfAllBallsStopped() {
         if (noMovingBall()) {
             isSimulating = false
-            changeMode(GameMode.READY)
+            changeGameMode(GameMode.READY)
         }
     }
 
