@@ -10,12 +10,12 @@ import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GestureDetectorCompat
-import androidx.lifecycle.Observer
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.customview.BallView
+import com.ellie.billiardsgame.databinding.ActivityMainBinding
 import com.ellie.billiardsgame.model.Point
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.hypot
 
 /**
@@ -48,6 +48,14 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
 
+    private val binding: ActivityMainBinding by lazy {
+        // Status Bar 없는 화면 설정
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
+        DataBindingUtil.setContentView(this, R.layout.activity_main)
+    }
+
     //----------------------------------------------------------
     // Public interface.
     //
@@ -55,8 +63,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Status Bar 없는 화면으로 실행
-        setContentViewWithNoStatusBar()
+        // ActivityMainBinding 초기화
+        initActivityMainBinding()
         // View가 화면에 그려졌을 때 리스너 추가
         addGlobalLayoutListener()
 
@@ -71,20 +79,20 @@ class MainActivity : AppCompatActivity() {
     //
 
     /**
-     * Status Bar 없는 화면을 만든다.
+     * Data Binding 인스턴스를 초기화한다.
      */
-    private fun setContentViewWithNoStatusBar() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
-
-        setContentView(R.layout.activity_main)
+    private fun initActivityMainBinding() {
+        binding.lifecycleOwner = this
+        binding.apply {
+            viewModel = mainViewModel
+        }
     }
 
     /**
      * View가 화면에 그려졌을 때 콜백 리스너를 추가한다.
      */
     private fun addGlobalLayoutListener() {
-        parentLayout.viewTreeObserver.addOnGlobalLayoutListener {
+        binding.parentLayout.viewTreeObserver.addOnGlobalLayoutListener {
             // ViewModel의 데이터 초기화
             initDataInViewModel()
         }
@@ -96,12 +104,16 @@ class MainActivity : AppCompatActivity() {
     private fun initDataInViewModel() {
         mainViewModel.apply {
             // 공의 위치 초기화
-            updateBall(WHITE, whiteBallView.x, whiteBallView.y)
-            updateBall(RED1, redBallView1.x, redBallView1.y)
-            updateBall(RED2, redBallView2.x, redBallView2.y)
+            with(binding) {
+                updateBall(WHITE, whiteBallView.x, whiteBallView.y)
+                updateBall(RED1, redBallView1.x, redBallView1.y)
+                updateBall(RED2, redBallView2.x, redBallView2.y)
+            }
 
             // 당구대 경계 초기화
-            setBoundary(poolTableView.top, poolTableView.right, poolTableView.bottom, poolTableView.left)
+            with (binding.poolTableView) {
+                setBoundary(top, right, bottom, left)
+            }
         }
     }
 
@@ -109,24 +121,8 @@ class MainActivity : AppCompatActivity() {
      * ViewModel의 데이터 변경을 감지해 콜백을 수행하는 Observer를 등록한다.
      */
     private fun observeViewModelData() = with(mainViewModel) {
-        val owner = this@MainActivity
-
-        // 각 공의 위치가 변경되면 View에도 변경한 위치 적용
-        whiteBallPosition.observe(owner, Observer {
-            whiteBallView.x = it.x
-            whiteBallView.y = it.y
-        })
-        redBall1Position.observe(owner, Observer {
-            redBallView1.x = it.x
-            redBallView1.y = it.y
-        })
-        redBall2Position.observe(owner, Observer {
-            redBallView2.x = it.x
-            redBallView2.y = it.y
-        })
-
         // 게임 모드가 변경되면 모드에 따른 UI 변경
-        curGameMode.observe(owner, Observer { applyChangedMode(it) })
+        curGameMode.observe(this@MainActivity, { applyChangedMode(it) })
     }
 
     /**
@@ -143,30 +139,30 @@ class MainActivity : AppCompatActivity() {
         gameModeUIEventHandler.changeButtonUI()
 
         // 기존에 있던 안내선 지우기
-        lineDrawer.removeLine()
+        binding.lineDrawer.removeLine()
     }
 
     /**
      * View에 리스너를 설정한다.
      */
     private fun setViewListeners() {
-        whiteBallView.setOnTouchListener { v, event ->
+        binding.whiteBallView.setOnTouchListener { v, event ->
             gameModeUIEventHandler.onWhiteBallTouch(event)
         }
-        
-        redBallView1.setOnTouchListener { v, event ->
+
+        binding.redBallView1.setOnTouchListener { v, event ->
             gameModeUIEventHandler.onRedBallTouch(v as BallView, event)
         }
 
-        redBallView2.setOnTouchListener { v, event ->
+        binding.redBallView2.setOnTouchListener { v, event ->
             gameModeUIEventHandler.onRedBallTouch(v as BallView, event)
         }
 
-        mainButton.setOnClickListener {
+        binding.mainButton.setOnClickListener {
             gameModeUIEventHandler.onMainButtonClick()
         }
 
-        flingButton.setOnClickListener {
+        binding.flingButton.setOnClickListener {
             // toggle
             flingMode = !flingMode
 
@@ -178,7 +174,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             // 기존의 안내선을 지운다.
-            lineDrawer.removeLine()
+            binding.lineDrawer.removeLine()
         }
     }
 
@@ -186,19 +182,19 @@ class MainActivity : AppCompatActivity() {
      * Fling 버튼의 텍스트, 버튼 색상을 바꾼다.
      */
     private fun changFlingButtonState(@StringRes textResId: Int, @ColorInt color: Int) {
-        flingButton.text = getText(textResId)
-        flingButton.setBackgroundColor(color)
+        binding.flingButton.text = getText(textResId)
+        binding.flingButton.setBackgroundColor(color)
     }
 
     /**
      * 게임 모드에 따라 화면 UI와 Event Handler를 정의한 인터페이스.
      */
     abstract inner class GameModeUIEventHandler {
-        // 버튼 텍스트 리소스
-        abstract val btnStringRes: Int
+        // 버튼 텍스트
+        abstract val btnText: String
 
-        // 버튼 색상 리소스
-        abstract val btnColorRes: Int
+        // 버튼 색상
+        abstract val btnColor: Int
 
         /**
          * 메인 버튼 클릭 시 Callback.
@@ -219,10 +215,9 @@ class MainActivity : AppCompatActivity() {
          * 메인 버튼 UI를 변경한다.
          */
         fun changeButtonUI() {
-            val context = this@MainActivity
-            mainButton.run {
-                text = context.getText(btnStringRes)
-                setBackgroundColor(context.resources.getColor(btnColorRes, null))
+            binding.mainButton.run {
+                text = btnText
+                setBackgroundColor(btnColor)
             }
         }
     }
@@ -231,11 +226,8 @@ class MainActivity : AppCompatActivity() {
      * 준비 모드일 때 UI 및 Event Handler.
      */
     inner class ReadyModeUIEventHandler : GameModeUIEventHandler() {
-        override val btnColorRes: Int
-            get() = R.string.btn_shot
-
-        override val btnStringRes: Int
-            get() = R.color.colorShotButton
+        override val btnText: String by lazy { this@MainActivity.getString(R.string.btn_shot) }
+        override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorShotButton, null) }
 
         // 빨간 공 Gesture Detector
         private val redBallGestureDetector by lazy {
@@ -292,7 +284,7 @@ class MainActivity : AppCompatActivity() {
          * 버튼(Shot) 클릭 Callback.
          */
         override fun onMainButtonClick() {
-            val velocity = lineDrawer.guideline.getVelocity()
+            val velocity = binding.lineDrawer.guideline.getVelocity()
 
             // 공의 속도가 0이 아닌 경우, 시뮬레이션 시작 & 실행 모드로 변경
             if (velocity.x * velocity.y != 0f) {
@@ -311,7 +303,9 @@ class MainActivity : AppCompatActivity() {
             whiteBallGestureDetector.onTouchEvent(event)
             if (!flingMode) {
                 // fling 모드가 아닌 경우, 안내선 보여주기
-                lineDrawer.drawLine(whiteBallView.centerX, whiteBallView.centerY, event.rawX, event.rawY)
+                with (binding.whiteBallView) {
+                    binding.lineDrawer.drawLine(centerX, centerY, event.rawX, event.rawY)
+                }
             }
 
             return true
@@ -322,11 +316,8 @@ class MainActivity : AppCompatActivity() {
      * 편집 모드일 때 UI 및 Event Handler.
      */
     inner class EditModeUIEventHandler : GameModeUIEventHandler() {
-        override val btnColorRes: Int
-            get() = R.string.btn_ok
-
-        override val btnStringRes: Int
-            get() = R.color.colorOKButton
+        override val btnText: String by lazy { this@MainActivity.getString(R.string.btn_ok) }
+        override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorOKButton, null) }
 
         /**
          * 버튼(OK) 클릭 Callback.
@@ -338,8 +329,8 @@ class MainActivity : AppCompatActivity() {
 
         override fun onWhiteBallTouch(event: MotionEvent): Boolean {
             if (event.action == MotionEvent.ACTION_MOVE) {
-                val x = event.rawX - whiteBallView.radius
-                val y = event.rawY - whiteBallView.radius
+                val x = event.rawX - binding.whiteBallView.radius
+                val y = event.rawY - binding.whiteBallView.radius
 
                 // 터치 위치에 따라 공 위치 변경
                 with(mainViewModel) {
@@ -373,11 +364,8 @@ class MainActivity : AppCompatActivity() {
      * 실행 모드일 때 UI 및 Event Handler.
      */
     inner class ExecuteModeUIEventHandler : GameModeUIEventHandler() {
-        override val btnColorRes: Int
-            get() = R.string.btn_cancel
-
-        override val btnStringRes: Int
-            get() = R.color.colorCancelButton
+        override val btnText: String by lazy { this@MainActivity.getString(R.string.btn_cancel) }
+        override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorCancelButton, null) }
 
         /**
          * 버튼(Cancel) 클릭 Callback.

@@ -17,9 +17,11 @@ class Guideline {
 
     // 안내선의 시작점
     var start = Point()
+        private set
 
     // 안내선의 끝점
     var end = Point()
+        private set
 
     // 안내선의 점의 위치를 외부에 알려주기 위한 필드
     val points: FloatArray

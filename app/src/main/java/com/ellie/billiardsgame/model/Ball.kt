@@ -33,7 +33,9 @@ class Ball {
 
     // 공의 속도
     var dx = 0f
+        private set
     var dy = 0f
+        private set
 
     // 다음 위치 = 이전 위치 + 속도
     val nextX: Float

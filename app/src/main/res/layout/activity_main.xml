@@ -1,104 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/parentLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <View
-        android:id="@+id/poolTableEdge"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="5dp"
-        android:background="@color/colorBackground"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/mainButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintDimensionRatio="1:2" />
+    <data>
+        <variable name="viewModel"
+            type="com.ellie.billiardsgame.main.MainViewModel" />
+    </data>
 
-    <View
-        android:id="@+id/poolTableView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="10dp"
-        android:background="@color/colorPoolTable"
-        app:layout_constraintTop_toTopOf="@id/poolTableEdge"
-        app:layout_constraintBottom_toBottomOf="@id/poolTableEdge"
-        app:layout_constraintStart_toStartOf="@id/poolTableEdge"
-        app:layout_constraintEnd_toEndOf="@id/poolTableEdge" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/parentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <com.ellie.billiardsgame.customview.BallView
-        android:id="@+id/whiteBallView"
-        android:layout_width="@dimen/ball_diameter_size"
-        android:layout_height="@dimen/ball_diameter_size"
-        android:background="@drawable/shape_ball"
-        android:backgroundTint="@color/colorWhiteBall"
-        app:layout_constraintBottom_toBottomOf="@id/poolTableView"
-        app:layout_constraintEnd_toEndOf="@id/poolTableView"
-        app:layout_constraintStart_toStartOf="@id/poolTableView"
-        app:layout_constraintTop_toTopOf="@+id/poolTableView"
-        app:layout_constraintVertical_bias="0.7" />
+        <View
+            android:id="@+id/poolTableEdge"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="5dp"
+            android:background="@color/colorBackground"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/mainButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintDimensionRatio="1:2" />
 
-    <com.ellie.billiardsgame.customview.BallView
-        android:id="@+id/redBallView1"
-        android:layout_width="@dimen/ball_diameter_size"
-        android:layout_height="@dimen/ball_diameter_size"
-        android:background="@drawable/shape_ball"
-        android:backgroundTint="@color/colorRedBall"
-        app:layout_constraintBottom_toBottomOf="@id/poolTableView"
-        app:layout_constraintEnd_toEndOf="@id/poolTableView"
-        app:layout_constraintHorizontal_bias="0.4"
-        app:layout_constraintStart_toStartOf="@id/poolTableView"
-        app:layout_constraintTop_toTopOf="@+id/poolTableView"
-        app:layout_constraintVertical_bias="0.4" />
+        <View
+            android:id="@+id/poolTableView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:background="@color/colorPoolTable"
+            app:layout_constraintTop_toTopOf="@id/poolTableEdge"
+            app:layout_constraintBottom_toBottomOf="@id/poolTableEdge"
+            app:layout_constraintStart_toStartOf="@id/poolTableEdge"
+            app:layout_constraintEnd_toEndOf="@id/poolTableEdge" />
 
-    <com.ellie.billiardsgame.customview.BallView
-        android:id="@+id/redBallView2"
-        android:layout_width="@dimen/ball_diameter_size"
-        android:layout_height="@dimen/ball_diameter_size"
-        android:background="@drawable/shape_ball"
-        android:backgroundTint="@color/colorRedBall"
-        app:layout_constraintBottom_toBottomOf="@id/poolTableView"
-        app:layout_constraintEnd_toEndOf="@id/poolTableView"
-        app:layout_constraintHorizontal_bias="0.8"
-        app:layout_constraintStart_toStartOf="@id/poolTableView"
-        app:layout_constraintTop_toTopOf="@+id/poolTableView"
-        app:layout_constraintVertical_bias="0.2" />
+        <com.ellie.billiardsgame.customview.BallView
+            android:id="@+id/whiteBallView"
+            android:layout_width="@dimen/ball_diameter_size"
+            android:layout_height="@dimen/ball_diameter_size"
+            android:background="@drawable/shape_ball"
+            android:backgroundTint="@color/colorWhiteBall"
+            app:position="@{viewModel.whiteBallPosition}"
+            app:layout_constraintBottom_toBottomOf="@id/poolTableView"
+            app:layout_constraintEnd_toEndOf="@id/poolTableView"
+            app:layout_constraintStart_toStartOf="@id/poolTableView"
+            app:layout_constraintTop_toTopOf="@+id/poolTableView"
+            app:layout_constraintVertical_bias="0.7" />
 
-    <com.ellie.billiardsgame.customview.LineCanvasView
-        android:id="@+id/lineDrawer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@android:color/transparent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <com.ellie.billiardsgame.customview.BallView
+            android:id="@+id/redBallView1"
+            android:layout_width="@dimen/ball_diameter_size"
+            android:layout_height="@dimen/ball_diameter_size"
+            android:background="@drawable/shape_ball"
+            android:backgroundTint="@color/colorRedBall"
+            app:position="@{viewModel.redBall1Position}"
+            app:layout_constraintBottom_toBottomOf="@id/poolTableView"
+            app:layout_constraintEnd_toEndOf="@id/poolTableView"
+            app:layout_constraintHorizontal_bias="0.4"
+            app:layout_constraintStart_toStartOf="@id/poolTableView"
+            app:layout_constraintTop_toTopOf="@+id/poolTableView"
+            app:layout_constraintVertical_bias="0.4" />
 
-    <Button
-        android:id="@+id/mainButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:text="@string/btn_shot"
-        android:textColor="@android:color/black"
-        android:background="@color/colorDefaultButton"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/flingButton" />
+        <com.ellie.billiardsgame.customview.BallView
+            android:id="@+id/redBallView2"
+            android:layout_width="@dimen/ball_diameter_size"
+            android:layout_height="@dimen/ball_diameter_size"
+            android:background="@drawable/shape_ball"
+            android:backgroundTint="@color/colorRedBall"
+            app:position="@{viewModel.redBall2Position}"
+            app:layout_constraintBottom_toBottomOf="@id/poolTableView"
+            app:layout_constraintEnd_toEndOf="@id/poolTableView"
+            app:layout_constraintHorizontal_bias="0.8"
+            app:layout_constraintStart_toStartOf="@id/poolTableView"
+            app:layout_constraintTop_toTopOf="@+id/poolTableView"
+            app:layout_constraintVertical_bias="0.2" />
 
-    <Button
-        android:id="@+id/flingButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:text="@string/btn_fling_off"
-        android:textColor="@android:color/black"
-        android:background="@color/colorDefaultButton"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/mainButton"/>
+        <com.ellie.billiardsgame.customview.LineCanvasView
+            android:id="@+id/lineDrawer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/mainButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/btn_shot"
+            android:textColor="@android:color/black"
+            android:background="@color/colorDefaultButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/flingButton" />
+
+        <Button
+            android:id="@+id/flingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/btn_fling_off"
+            android:textColor="@android:color/black"
+            android:background="@color/colorDefaultButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/mainButton"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
