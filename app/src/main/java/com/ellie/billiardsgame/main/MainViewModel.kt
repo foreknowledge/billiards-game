@@ -101,7 +101,10 @@ class MainViewModel : ViewModel() {
                 moveAllBalls()
 
                 // 모든 공이 멈추었으면 시뮬레이션 종료
-                endSimulationIfAllBallsStopped()
+                if (noMovingBall()) {
+                    isSimulating = false
+                    changeGameMode(GameMode.READY)
+                }
 
                 // 프레임 간격 설정
                 Thread.sleep(FRAME_DURATION_MS)
@@ -110,9 +113,9 @@ class MainViewModel : ViewModel() {
     }
 
     /**
-     * 당구공들을 시작 위치로 되돌리고 당구 시뮬레이션을 종료한다.
+     * 시뮬레이션을 취소한다.
      */
-    fun endSimulationAndRestorePositions() {
+    fun cancelSimulation() {
         // 시뮬레이션 종료
         isSimulating = false
 
@@ -154,16 +157,6 @@ class MainViewModel : ViewModel() {
                 decreaseVelocity()
                 ballCollisionManager.updateBallConsideringTheConflict(i, nextX, nextY)
             }
-        }
-    }
-
-    /**
-     * 모든 공이 멈추었다면 시뮬레이션을 종료한다.
-     */
-    private fun endSimulationIfAllBallsStopped() {
-        if (noMovingBall()) {
-            isSimulating = false
-            changeGameMode(GameMode.READY)
         }
     }
 

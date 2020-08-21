@@ -383,8 +383,8 @@ class MainActivity : AppCompatActivity() {
          * 버튼(Cancel) 클릭 Callback.
          */
         override fun onMainButtonClick() {
-            // 시뮬레이션을 종료하고 공들을 원위치로 되돌리기
-            mainViewModel.endSimulationAndRestorePositions()
+            // 시뮬레이션 취소 (공들을 원위치로 되돌린다)
+            mainViewModel.cancelSimulation()
 
             // 준비 모드로 변경
             mainViewModel.changeGameMode(GameMode.READY)
