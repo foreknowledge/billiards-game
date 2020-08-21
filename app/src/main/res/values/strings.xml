@@ -2,7 +2,7 @@
     <string name="app_name">Billiards Game</string>
     <string name="btn_shot">Shot</string>
     <string name="btn_ok">OK</string>
-    <string name="btn_end">End</string>
+    <string name="btn_cancel">Cancel</string>
     <string name="btn_fling_off">fling off</string>
     <string name="btn_fling_on">fling on</string>
 </resources>

@@ -19,7 +19,7 @@ class LineCanvasView : View {
     // Instance data.
     //
 
-    private val guideline = Guideline()
+    val guideline = Guideline()
 
     // 안내선 그리기 위한 페인트
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -70,11 +70,6 @@ class LineCanvasView : View {
         // 다시 그리기. onDraw() 콜백 호출
         invalidate()
     }
-
-    /**
-     * 안내선에 길이와 방향에 따른 속도를 반환한다.
-     */
-    fun getVelocity() = guideline.getVelocity()
 
     //----------------------------------------------------------
     // Internal support interface.

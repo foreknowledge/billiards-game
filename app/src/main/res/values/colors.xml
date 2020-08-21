@@ -12,7 +12,7 @@
     <color name="colorDefaultButton">#EAEAEA</color>
     <color name="colorOnButton">#43D0EF</color>
 
-    <color name="colorReadyButton">@color/colorDefaultButton</color>
-    <color name="colorShotButton">#FA5F66</color>
-    <color name="colorEditButton">#F9F776</color>
+    <color name="colorShotButton">@color/colorDefaultButton</color>
+    <color name="colorCancelButton">#FA5F66</color>
+    <color name="colorOKButton">#F9F776</color>
 </resources>

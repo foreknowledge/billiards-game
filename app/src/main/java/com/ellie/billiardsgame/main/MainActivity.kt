@@ -18,6 +18,14 @@ import com.ellie.billiardsgame.model.Point
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.hypot
 
+/**
+ * 당구 게임은 3가지 게임 모드로 동작한다. (편집 모드 - 준비 모드 - 실행 모드)
+ *
+ * 게임 모드 별로 바뀌어야 하는 UI나 Event Handler 동작 - GameModeUIEventHandler 추상 클래스에 정의한다.
+ * 각 게임 모드 마다 추상 클래스의 구현체를 만들고, 게임 모드가 바뀌면 추상 클래스 인스턴스를 바꾸는 패턴.
+ *
+ * 게임 시작 모드는 [준비 모드]이다.
+ */
 @SuppressLint("ClickableViewAccessibility")
 class MainActivity : AppCompatActivity() {
 
@@ -25,16 +33,16 @@ class MainActivity : AppCompatActivity() {
     // Instance data.
     //
 
-    // 공을 칠 때 Fling을 사용할 것인지에 대한 변수
+    // 공을 칠 때 Fling 모션을 사용할 것인지에 대한 변수
     private var flingMode = false
 
-    // 각 모드에 실행할 동작 정의
-    private val readyModeActionConductor = ReadyModeActionConductor()
-    private val editModeActionConductor = EditModeActionConductor()
-    private val executeModeActionConductor = ExecuteModeActionConductor()
+    // 각 모드 별 정의한 클래스 인스턴스 생성
+    private val readyModeUIEventHandler = ReadyModeUIEventHandler()
+    private val editModeUIEventHandler = EditModeUIEventHandler()
+    private val executeModeUIEventHandler = ExecuteModeUIEventHandler()
 
     // 현재 게임 모드 (Default = 준비 모드)
-    private var gameModeActionConductor: GameModeActionConductor = readyModeActionConductor
+    private var gameModeUIEventHandler: GameModeUIEventHandler = readyModeUIEventHandler
 
     private val mainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
@@ -125,68 +133,39 @@ class MainActivity : AppCompatActivity() {
      * 변경된 게임 모드에 따라 UI와 UI 동작을 변경한다.
      */
     private fun applyChangedMode(mode: GameMode) {
-        gameModeActionConductor = when (mode) {
-            GameMode.READY -> readyModeActionConductor
-            GameMode.EDIT -> editModeActionConductor
-            GameMode.EXECUTE -> executeModeActionConductor
+        gameModeUIEventHandler = when (mode) {
+            GameMode.READY -> readyModeUIEventHandler
+            GameMode.EDIT -> editModeUIEventHandler
+            GameMode.EXECUTE -> executeModeUIEventHandler
         }
 
-        modeButton.text = gameModeActionConductor.btnText
-        modeButton.setBackgroundColor(gameModeActionConductor.btnColor)
+        // 변경된 모드에 따라 Button UI 변경
+        gameModeUIEventHandler.changeButtonUI()
 
-        // 기존에 있던 안내선을 지운다.
-        lineCanvas.removeLine()
+        // 기존에 있던 안내선 지우기
+        lineDrawer.removeLine()
     }
 
     /**
      * View에 리스너를 설정한다.
      */
     private fun setViewListeners() {
-        setWhiteBallTouchListener()
-        setRedBallTouchListener()
-        setModeButtonClickListener()
-        setFlingButtonClickListener()
-    }
-
-    /**
-     * 흰 공의 터치 리스너를 설정한다.
-     */
-    private fun setWhiteBallTouchListener() {
         whiteBallView.setOnTouchListener { v, event ->
-            // 현재 모드에 맞는 흰 공 터치 이벤트 발생
-            gameModeActionConductor.onWhiteBallTouch(event)
+            gameModeUIEventHandler.onWhiteBallTouch(event)
         }
-    }
-
-    /**
-     * 빨간 공의 터치 리스너를 설정한다.
-     */
-    private fun setRedBallTouchListener() {
+        
         redBallView1.setOnTouchListener { v, event ->
-            // 현재 모드에 맞는 빨간 공 터치 이벤트 발생
-            gameModeActionConductor.onRedBallTouch(v as BallView, event)
+            gameModeUIEventHandler.onRedBallTouch(v as BallView, event)
         }
 
         redBallView2.setOnTouchListener { v, event ->
-            // 현재 모드에 맞는 빨간 공 터치 이벤트 발생
-            gameModeActionConductor.onRedBallTouch(v as BallView, event)
+            gameModeUIEventHandler.onRedBallTouch(v as BallView, event)
         }
-    }
 
-    /**
-     * 게임 모드 버튼의 클릭 리스너를 설정한다.
-     */
-    private fun setModeButtonClickListener() {
-        modeButton.setOnClickListener {
-            // 현재 모드에 맞는 게임 모드 클릭 이벤트 발생
-            gameModeActionConductor.onModeButtonClick()
+        mainButton.setOnClickListener {
+            gameModeUIEventHandler.onMainButtonClick()
         }
-    }
 
-    /**
-     * Fling 버튼의 클릭 리스너를 설정한다.
-     */
-    private fun setFlingButtonClickListener() {
         flingButton.setOnClickListener {
             // toggle
             flingMode = !flingMode
@@ -199,7 +178,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             // 기존의 안내선을 지운다.
-            lineCanvas.removeLine()
+            lineDrawer.removeLine()
         }
     }
 
@@ -212,22 +191,51 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * 게임 모드에 따라 적절한 동작을 하는 인터페이스.
+     * 게임 모드에 따라 화면 UI와 Event Handler를 정의한 인터페이스.
      */
-    interface GameModeActionConductor {
-        val btnText: String
-        val btnColor: Int
-        fun onWhiteBallTouch(event: MotionEvent): Boolean
-        fun onRedBallTouch(ballView: BallView, event: MotionEvent): Boolean
-        fun onModeButtonClick()
+    abstract inner class GameModeUIEventHandler {
+        // 버튼 텍스트 리소스
+        abstract val btnStringRes: Int
+
+        // 버튼 색상 리소스
+        abstract val btnColorRes: Int
+
+        /**
+         * 메인 버튼 클릭 시 Callback.
+         */
+        abstract fun onMainButtonClick()
+
+        /**
+         * 흰 공 터치 시 Callback.
+         */
+        abstract fun onWhiteBallTouch(event: MotionEvent): Boolean
+
+        /**
+         * 빨간 공 터치 시 Callback.
+         */
+        abstract fun onRedBallTouch(ballView: BallView, event: MotionEvent): Boolean
+
+        /**
+         * 메인 버튼 UI를 변경한다.
+         */
+        fun changeButtonUI() {
+            val context = this@MainActivity
+            mainButton.run {
+                text = context.getText(btnStringRes)
+                setBackgroundColor(context.resources.getColor(btnColorRes, null))
+            }
+        }
     }
 
     /**
-     * 준비 모드일 때 실행할 동작 정의
+     * 준비 모드일 때 UI 및 Event Handler.
      */
-    inner class ReadyModeActionConductor : GameModeActionConductor {
-        override val btnText: String by lazy { this@MainActivity.getText(R.string.btn_shot).toString() }
-        override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorReadyButton, null) }
+    inner class ReadyModeUIEventHandler : GameModeUIEventHandler() {
+        override val btnColorRes: Int
+            get() = R.string.btn_shot
+
+        override val btnStringRes: Int
+            get() = R.color.colorShotButton
 
         // 빨간 공 Gesture Detector
         private val redBallGestureDetector by lazy {
@@ -279,6 +287,19 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
+        
+        /**
+         * 버튼(Shot) 클릭 Callback.
+         */
+        override fun onMainButtonClick() {
+            val velocity = lineDrawer.guideline.getVelocity()
+
+            // 공의 속도가 0이 아닌 경우, 시뮬레이션 시작 & 실행 모드로 변경
+            if (velocity.x * velocity.y != 0f) {
+                mainViewModel.startSimulation(velocity)
+                mainViewModel.changeGameMode(GameMode.EXECUTE)
+            }
+        }
 
         override fun onRedBallTouch(ballView: BallView, event: MotionEvent): Boolean {
             redBallGestureDetector.onTouchEvent(event)
@@ -290,29 +311,30 @@ class MainActivity : AppCompatActivity() {
             whiteBallGestureDetector.onTouchEvent(event)
             if (!flingMode) {
                 // fling 모드가 아닌 경우, 안내선 보여주기
-                lineCanvas.drawLine(whiteBallView.centerX, whiteBallView.centerY, event.rawX, event.rawY)
+                lineDrawer.drawLine(whiteBallView.centerX, whiteBallView.centerY, event.rawX, event.rawY)
             }
 
             return true
         }
-
-        override fun onModeButtonClick() {
-            val velocity = lineCanvas.getVelocity()
-
-            // 공의 속도가 0이 아닌 경우, 시뮬레이션 시작 & 실행 모드로 변경
-            if (velocity.x * velocity.y != 0f) {
-                mainViewModel.startSimulation(velocity)
-                mainViewModel.changeGameMode(GameMode.EXECUTE)
-            }
-        }
     }
 
     /**
-     * 편집 모드일 때 실행할 동작 정의
+     * 편집 모드일 때 UI 및 Event Handler.
      */
-    inner class EditModeActionConductor : GameModeActionConductor {
-        override val btnText: String by lazy { this@MainActivity.getText(R.string.btn_ok).toString() }
-        override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorEditButton, null) }
+    inner class EditModeUIEventHandler : GameModeUIEventHandler() {
+        override val btnColorRes: Int
+            get() = R.string.btn_ok
+
+        override val btnStringRes: Int
+            get() = R.color.colorOKButton
+
+        /**
+         * 버튼(OK) 클릭 Callback.
+         */
+        override fun onMainButtonClick() {
+            // 준비 모드로 변경
+            mainViewModel.changeGameMode(GameMode.READY)
+        }
 
         override fun onWhiteBallTouch(event: MotionEvent): Boolean {
             if (event.action == MotionEvent.ACTION_MOVE) {
@@ -345,30 +367,31 @@ class MainActivity : AppCompatActivity() {
 
             return true
         }
-
-        override fun onModeButtonClick() {
-            // 준비 모드로 변경
-            mainViewModel.changeGameMode(GameMode.READY)
-        }
     }
 
     /**
-     * 실행 모드일 때 실행할 동작 정의
+     * 실행 모드일 때 UI 및 Event Handler.
      */
-    inner class ExecuteModeActionConductor : GameModeActionConductor {
-        override val btnText: String by lazy { this@MainActivity.getText(R.string.btn_end).toString() }
-        override val btnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorShotButton, null) }
+    inner class ExecuteModeUIEventHandler : GameModeUIEventHandler() {
+        override val btnColorRes: Int
+            get() = R.string.btn_cancel
 
-        override fun onWhiteBallTouch(event: MotionEvent) = false
+        override val btnStringRes: Int
+            get() = R.color.colorCancelButton
 
-        override fun onRedBallTouch(ballView: BallView, event: MotionEvent) = false
-
-        override fun onModeButtonClick() {
+        /**
+         * 버튼(Cancel) 클릭 Callback.
+         */
+        override fun onMainButtonClick() {
             // 시뮬레이션을 종료하고 공들을 원위치로 되돌리기
             mainViewModel.endSimulationAndRestorePositions()
 
             // 준비 모드로 변경
             mainViewModel.changeGameMode(GameMode.READY)
         }
+
+        override fun onWhiteBallTouch(event: MotionEvent) = false
+
+        override fun onRedBallTouch(ballView: BallView, event: MotionEvent) = false
     }
 }
