@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun initActivityMainBinding() {
         binding.lifecycleOwner = this
-        binding.apply {
+        binding.run {
             viewModel = mainViewModel
         }
     }
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity() {
      * ViewModel의 데이터를 초기화한다.
      */
     private fun initDataInViewModel() {
-        mainViewModel.apply {
+        mainViewModel.run {
             // 공의 위치 초기화
             with(binding) {
                 updateBall(WHITE, whiteBallView.x, whiteBallView.y)
@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity() {
      * Fling 버튼의 텍스트, 버튼 색상을 바꾼다.
      */
     private fun changFlingButtonState(@StringRes textResId: Int, @ColorInt color: Int) {
-        binding.flingButton.apply {
+        binding.flingButton.run {
             text = getText(textResId)
             setBackgroundColor(color)
         }
