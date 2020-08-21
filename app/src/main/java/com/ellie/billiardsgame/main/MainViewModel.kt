@@ -1,5 +1,6 @@
 package com.ellie.billiardsgame.main
 
+import android.graphics.Rect
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -58,7 +59,7 @@ class MainViewModel : ViewModel() {
      * 당구대의 Boundary 데이터를 설정한다.
      */
     fun setBoundary(top: Int, right: Int, bottom: Int, left: Int) {
-        ballCollisionManager.setBoundary(Boundary(Point(left.toFloat(), top.toFloat()), Point(right.toFloat(), bottom.toFloat())))
+        ballCollisionManager.setBoundary(Boundary(Rect(left, top, right, bottom)))
     }
 
     /**
