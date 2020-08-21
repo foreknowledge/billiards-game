@@ -97,6 +97,7 @@ class MainViewModel : ViewModel() {
         executor.submit {
             isSimulating = true
 
+            // FRAME_DURATION_MS 마다 화면을 갱신
             while(isSimulating) {
                 // 모든 공을 움직인다
                 moveAllBalls()
@@ -107,7 +108,6 @@ class MainViewModel : ViewModel() {
                     changeGameMode(GameMode.READY)
                 }
 
-                // 프레임 간격 설정
                 Thread.sleep(FRAME_DURATION_MS)
             }
         }
