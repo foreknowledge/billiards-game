@@ -1,4 +1,4 @@
-# BilliardsGame
+# billiards-game
 
 ## 개요
 
