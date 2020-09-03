@@ -25,7 +25,7 @@ Android SDK : 29
 이 저장소를 복제해서 **Android Studio**에 import 합니다.
 
 ```bash
-git clone https://github.com/foreknowledge/BilliardsGame.git
+git clone https://github.com/foreknowledge/billiards-game.git
 ```
 
 ## 사용법
