@@ -122,13 +122,13 @@ class MainActivity : AppCompatActivity() {
      */
     private fun observeViewModelData() = with(mainViewModel) {
         // 게임 모드가 변경되면 모드에 따른 UI 변경
-        curGameMode.observe(this@MainActivity, { applyChangedMode(it) })
+        curGameMode.observe(this@MainActivity, { changeState(it) })
     }
 
     /**
      * 변경된 게임 모드에 따라 UI Event Handler를 변경한다.
      */
-    private fun applyChangedMode(mode: GameMode) {
+    private fun changeState(mode: GameMode) {
         state = when (mode) {
             GameMode.READY -> readyState
             GameMode.EDIT -> editState
@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setViewListeners() {
         // 흰 공 터치 리스너 설정
-        binding.whiteBallView.setOnTouchListener { v, event ->
+        binding.whiteBallView.setOnTouchListener { _, event ->
             state.onWhiteBallTouch(event)
         }
 
