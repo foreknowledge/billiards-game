@@ -37,12 +37,12 @@ class MainActivity : AppCompatActivity() {
     private var flingMode = false
 
     // 각 모드 별 UI Event Handler 인스턴스
-    private val readyModeUIEventHandler = ReadyModeUIEventHandler()
-    private val editModeUIEventHandler = EditModeUIEventHandler()
-    private val executeModeUIEventHandler = ExecuteModeUIEventHandler()
+    private val readyState = ReadyState()
+    private val editState = EditState()
+    private val executeState = ExecuteState()
 
     // 현재 게임 모드 UI Event Handler (Default = 준비 모드)
-    private var gameModeUIEventHandler: GameModeUIEventHandler = readyModeUIEventHandler
+    private var state: State = readyState
 
     private val mainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
@@ -129,14 +129,14 @@ class MainActivity : AppCompatActivity() {
      * 변경된 게임 모드에 따라 UI Event Handler를 변경한다.
      */
     private fun applyChangedMode(mode: GameMode) {
-        gameModeUIEventHandler = when (mode) {
-            GameMode.READY -> readyModeUIEventHandler
-            GameMode.EDIT -> editModeUIEventHandler
-            GameMode.EXECUTE -> executeModeUIEventHandler
+        state = when (mode) {
+            GameMode.READY -> readyState
+            GameMode.EDIT -> editState
+            GameMode.EXECUTE -> executeState
         }
 
         // 변경된 모드에 따라 Button UI 변경
-        gameModeUIEventHandler.changeButtonUI()
+        state.changeButtonUI()
 
         // 기존에 있던 안내선 지우기
         binding.lineDrawer.removeLine()
@@ -148,22 +148,22 @@ class MainActivity : AppCompatActivity() {
     private fun setViewListeners() {
         // 흰 공 터치 리스너 설정
         binding.whiteBallView.setOnTouchListener { v, event ->
-            gameModeUIEventHandler.onWhiteBallTouch(event)
+            state.onWhiteBallTouch(event)
         }
 
         // 빨간 공 터치 리스너 설정
         binding.redBallView1.setOnTouchListener { v, event ->
-            gameModeUIEventHandler.onRedBallTouch(v as BallView, event)
+            state.onRedBallTouch(v as BallView, event)
         }
 
         // 빨간 공 터치 리스너 설정
         binding.redBallView2.setOnTouchListener { v, event ->
-            gameModeUIEventHandler.onRedBallTouch(v as BallView, event)
+            state.onRedBallTouch(v as BallView, event)
         }
 
         // 메인 버튼 클릭 리스너 설정
         binding.mainButton.setOnClickListener {
-            gameModeUIEventHandler.onMainButtonClick()
+            state.onMainButtonClick()
         }
 
         // Fling 버튼 클릭 리스너 설정
@@ -201,7 +201,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * 게임 모드에 따라 변경할 화면 UI Event Handler를 정의한 추상 클래스.
      */
-    abstract inner class GameModeUIEventHandler {
+    abstract inner class State {
         // 메인 버튼 텍스트
         abstract val mainBtnText: String
 
@@ -237,7 +237,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * 준비 모드일 때 UI Event Handler.
      */
-    inner class ReadyModeUIEventHandler : GameModeUIEventHandler() {
+    inner class ReadyState : State() {
 
         //----------------------------------------------------------
         // Instance data.
@@ -337,7 +337,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * 편집 모드일 때 UI Event Handler.
      */
-    inner class EditModeUIEventHandler : GameModeUIEventHandler() {
+    inner class EditState : State() {
 
         //----------------------------------------------------------
         // Public interface.
@@ -390,7 +390,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * 실행 모드일 때 UI Event Handler.
      */
-    inner class ExecuteModeUIEventHandler : GameModeUIEventHandler() {
+    inner class ExecuteState : State() {
 
         //----------------------------------------------------------
         // Public interface.
