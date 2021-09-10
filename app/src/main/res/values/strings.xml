@@ -5,4 +5,6 @@
     <string name="btn_cancel">Cancel</string>
     <string name="btn_fling_off">fling off</string>
     <string name="btn_fling_on">fling on</string>
+    <string name="btn_direction">Direction</string>
+    <string name="btn_power">Power</string>
 </resources>
