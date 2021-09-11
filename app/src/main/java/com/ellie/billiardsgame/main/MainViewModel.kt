@@ -20,20 +20,18 @@ class MainViewModel : ViewModel() {
     // 스레드를 실행하는 executor
     private val executor = Executors.newFixedThreadPool(3)
 
-    private var boundary: Rect = Rect()
-
     // 시뮬레이션 실행을 제어하는 변수
     private var isSimulating = false
 
-    // 당구공들을 관리하는 배열
-    private val balls = listOf(Ball(), Ball(), Ball())
+    private var boundary: Rect = Rect()
+
+    val whiteBall = Ball()
+    val redBall1 = Ball()
+    val redBall2 = Ball()
+    private val balls = listOf(whiteBall, redBall1, redBall2)
 
     // 당구공들의 시작 위치를 가지고 있는 배열
     private val startBallPositions = listOf(Point(), Point(), Point())
-
-    val whiteBall: Ball = balls[WHITE]
-    val redBall1: Ball = balls[RED1]
-    val redBall2: Ball = balls[RED2]
 
     /**
      * 당구대의 Boundary 데이터를 설정한다.
@@ -154,11 +152,9 @@ class MainViewModel : ViewModel() {
      * 모든 공을 움직인다.
      */
     private fun moveAllBalls() {
-        for (i in balls.indices) {
-            with (balls[i]) {
-                decreaseVelocity()
-                updatePosition(nextX, nextY)
-            }
+        balls.forEach {
+            it.decreaseVelocity()
+            it.updatePosition(it.nextX, it.nextY)
         }
     }
 
