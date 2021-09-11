@@ -60,8 +60,6 @@ class MainActivity : AppCompatActivity() {
 
         // ActivityMainBinding 초기화
         initActivityMainBinding()
-        // View가 화면에 그려졌을 때 리스너 추가
-        addGlobalLayoutListener()
 
         // ViewModel의 데이터 변경 관찰(Observing)
         observeViewModelData()
@@ -71,7 +69,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) hideSystemUI()
+        if (hasFocus) {
+            hideSystemUI()
+
+            // View가 화면에 그려졌을 때 리스너 추가
+            addGlobalLayoutListener()
+        }
     }
 
     private fun hideSystemUI() {
