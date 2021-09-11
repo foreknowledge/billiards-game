@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.model.Ball
-import com.ellie.billiardsgame.model.Boundary
 import com.ellie.billiardsgame.model.Point
 import java.util.concurrent.Executors
 import kotlin.math.abs
@@ -21,6 +20,8 @@ class MainViewModel : ViewModel() {
     // 스레드를 실행하는 executor
     private val executor = Executors.newFixedThreadPool(3)
 
+    private var boundary: Rect = Rect()
+
     // 시뮬레이션 실행을 제어하는 변수
     private var isSimulating = false
 
@@ -30,9 +31,6 @@ class MainViewModel : ViewModel() {
     // 당구공들의 시작 위치를 가지고 있는 배열
     private val startBallPositions = listOf(Point(), Point(), Point())
 
-    // 공의 충돌 관련 작업을 담당
-    private val collisionManager = BallCollisionManager(balls)
-
     val whiteBall: Ball = balls[WHITE]
     val redBall1: Ball = balls[RED1]
     val redBall2: Ball = balls[RED2]
@@ -41,7 +39,8 @@ class MainViewModel : ViewModel() {
      * 당구대의 Boundary 데이터를 설정한다.
      */
     fun setBoundary(top: Int, right: Int, bottom: Int, left: Int) {
-        collisionManager.setBoundary(Boundary(Rect(left, top, right, bottom)))
+        val diameter = GlobalApplication.ballDiameter.toInt()
+        boundary = Rect(left, top, right - diameter, bottom - diameter)
     }
 
     /**
@@ -55,19 +54,36 @@ class MainViewModel : ViewModel() {
     /**
      * 당구공의 위치를 충돌을 고려해 업데이트한다.
      */
-    fun updateBallPosition(ballId: Int, x: Float, y: Float) {
-        val nextPoint = collisionManager.getAdjustedPointToBound(ballId, x, y)
+    fun Ball.updatePosition(x: Float, y: Float) {
+        val nextPoint = CollisionDetector.getAdjustedPointToBound(x, y, boundary)
 
-        val collidedBallId = collisionManager.getCollidedBallId(ballId, nextPoint)
-        if (collidedBallId != null){
+        if (nextPoint.x != x) changeDirectionX()
+        if (nextPoint.y != y) changeDirectionY()
+
+        val collidedBall = getCollidedBall(this, nextPoint)
+        if (collidedBall != null){
             // 충돌한 경우
-            val (velocity1, velocity2) = CollisionCalculator.calculateBallsVelocity(balls[ballId], balls[collidedBallId])
-            balls[ballId].setVelocity(velocity1.x, velocity1.y)
-            balls[collidedBallId].setVelocity(velocity2.x, velocity2.y)
+            val (velocity1, velocity2) = CollisionCalculator.calculateBallsVelocity(this, collidedBall)
+            this.setVelocity(velocity1.x, velocity1.y)
+            collidedBall.setVelocity(velocity2.x, velocity2.y)
         } else {
             // 충돌하지 않은 경우
-            balls[ballId].update(nextPoint)
+            this.update(nextPoint)
         }
+    }
+
+    private fun getCollidedBall(ball: Ball, position: Point): Ball? {
+        // 모든 공을 돌면서 확인
+        balls.forEach {
+            // 자기 자신이면 Pass
+            if (it == ball)
+                return@forEach
+            if (CollisionDetector.isBallCollided(position, it.point.value!!))
+                return it
+        }
+
+        // 충돌한 공 없으면 null 반환
+        return null
     }
 
     /**
@@ -149,7 +165,7 @@ class MainViewModel : ViewModel() {
         for (i in balls.indices) {
             with (balls[i]) {
                 decreaseVelocity()
-                updateBallPosition(i, nextX, nextY)
+                updatePosition(nextX, nextY)
             }
         }
     }

@@ -384,7 +384,7 @@ class MainActivity : AppCompatActivity() {
 
                 // 터치 위치에 따라 공 위치 변경
                 with(mainViewModel) {
-                    updateBallPosition(WHITE, x, y)
+                    whiteBall.updatePosition(x, y)
                 }
             }
 
@@ -399,11 +399,10 @@ class MainActivity : AppCompatActivity() {
 
                 // 터치 위치에 따라 해당 공 위치 변경
                 with(mainViewModel) {
-                    if (ballView.id == R.id.redBallView1) {
-                        updateBallPosition(RED1, x, y)
-                    } else {
-                        updateBallPosition(RED2, x, y)
-                    }
+                    if (ballView.id == R.id.redBallView1)
+                        redBall1.updatePosition(x, y)
+                    else
+                        redBall2.updatePosition(x, y)
                 }
             }
 
