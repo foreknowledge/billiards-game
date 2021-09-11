@@ -56,7 +56,18 @@ class MainViewModel : ViewModel() {
      * 당구공의 위치를 충돌을 고려해 업데이트한다.
      */
     fun updateBallPosition(ballId: Int, x: Float, y: Float) {
-        collisionManager.updateBallConsideringTheConflict(ballId, x, y)
+        val nextPoint = collisionManager.getAdjustedPointToBound(ballId, x, y)
+
+        val collidedBallId = collisionManager.getCollidedBallId(ballId, nextPoint)
+        if (collidedBallId != null){
+            // 충돌한 경우
+            val (velocity1, velocity2) = CollisionCalculator.calculateBallsVelocity(balls[ballId], balls[collidedBallId])
+            balls[ballId].setVelocity(velocity1.x, velocity1.y)
+            balls[collidedBallId].setVelocity(velocity2.x, velocity2.y)
+        } else {
+            // 충돌하지 않은 경우
+            balls[ballId].update(nextPoint)
+        }
     }
 
     /**
@@ -138,7 +149,7 @@ class MainViewModel : ViewModel() {
         for (i in balls.indices) {
             with (balls[i]) {
                 decreaseVelocity()
-                collisionManager.updateBallConsideringTheConflict(i, nextX, nextY)
+                updateBallPosition(i, nextX, nextY)
             }
         }
     }
