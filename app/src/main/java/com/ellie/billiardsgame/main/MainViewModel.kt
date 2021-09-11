@@ -33,15 +33,9 @@ class MainViewModel : ViewModel() {
     // 공의 충돌 관련 작업을 담당
     private val collisionManager = BallCollisionManager(balls)
 
-    // 각 공의 Reference
-    private val whiteBall: Ball = balls[WHITE]
-    private val redBall1: Ball = balls[RED1]
-    private val redBall2: Ball = balls[RED2]
-
-    // 각 공의 위치
-    val whiteBallPosition = whiteBall.point
-    val redBall1Position = redBall1.point
-    val redBall2Position = redBall2.point
+    val whiteBall: Ball = balls[WHITE]
+    val redBall1: Ball = balls[RED1]
+    val redBall2: Ball = balls[RED2]
 
     /**
      * 당구대의 Boundary 데이터를 설정한다.

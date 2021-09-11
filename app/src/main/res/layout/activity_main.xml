@@ -48,7 +48,7 @@
             app:layout_constraintStart_toStartOf="@id/poolTableView"
             app:layout_constraintTop_toTopOf="@+id/poolTableView"
             app:layout_constraintVertical_bias="0.7"
-            app:position="@{viewModel.whiteBallPosition}" />
+            app:position="@{viewModel.whiteBall.point}" />
 
         <View
             android:id="@+id/redBallView1"
@@ -62,7 +62,7 @@
             app:layout_constraintStart_toStartOf="@id/poolTableView"
             app:layout_constraintTop_toTopOf="@+id/poolTableView"
             app:layout_constraintVertical_bias="0.4"
-            app:position="@{viewModel.redBall1Position}" />
+            app:position="@{viewModel.redBall1.point}" />
 
         <View
             android:id="@+id/redBallView2"
@@ -76,7 +76,7 @@
             app:layout_constraintStart_toStartOf="@id/poolTableView"
             app:layout_constraintTop_toTopOf="@+id/poolTableView"
             app:layout_constraintVertical_bias="0.2"
-            app:position="@{viewModel.redBall2Position}" />
+            app:position="@{viewModel.redBall2.point}" />
 
         <com.ellie.billiardsgame.customview.LineCanvasView
             android:id="@+id/lineDrawer"
