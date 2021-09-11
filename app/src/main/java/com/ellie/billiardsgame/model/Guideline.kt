@@ -1,5 +1,7 @@
 package com.ellie.billiardsgame.model
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.ellie.billiardsgame.MAX_GUIDELINE_LENGTH
 import com.ellie.billiardsgame.MAX_POWER
 import kotlin.math.hypot
@@ -10,46 +12,21 @@ import kotlin.math.sqrt
  * 안내선의 데이터를 관리한다.
  */
 class Guideline {
+    private val _start = MutableLiveData(Point())
+    val start: LiveData<Point> = _start
 
-    //----------------------------------------------------------
-    // Public interface
-    //
+    private val _end = MutableLiveData(Point())
+    val end: LiveData<Point> = _end
 
-    // 안내선의 시작점
-    var start = Point()
-        private set
+    private val startPoint get() = start.value!!
+    private val endPoint get() = end.value!!
 
-    // 안내선의 끝점
-    var end = Point()
-        private set
+    private val length get() = hypot(dx, dy)
 
-    // 안내선의 점의 위치를 외부에 알려주기 위한 필드
-    val points: FloatArray
-        get() = floatArrayOf(start.x, start.y, end.x, end.y)
+    private val dx get() = endPoint.x - startPoint.x
+    private val dy get() = endPoint.y - startPoint.y
 
-    // 안내선의 길이
-    val length
-        get() = hypot(dx, dy)
-
-    // 안내선의 x 변량
-    val dx
-        get() = end.x - start.x
-
-    // 안내선의 y 변량
-    val dy
-        get() = end.y - start.y
-
-    fun setPoints(startX: Float, startY: Float, endX: Float, endY: Float) {
-        start.x = startX
-        start.y = startY
-        end.x = endX
-        end.y = endY
-    }
-
-    /**
-     * 안내선의 길이와 방향에 따른 속도를 계산해서 반환한다.
-     */
-    fun getVelocity(): Point {
+    val velocity: Point get() {
         // 비율 = 현재 길이 / 최대 길이
         val ratio = length / MAX_GUIDELINE_LENGTH
         // 안내선의 기울기
@@ -62,9 +39,31 @@ class Guideline {
         return Point(velocityX, velocityY)
     }
 
-    //----------------------------------------------------------
-    // Internal support interface.
-    //
+    fun setPoints(start: Point, end: Point) {
+        _start.postValue(start)
+        _end.postValue(calcMaxEndPoint(start, end))
+    }
+
+    /**
+     * 최대 길이 만큼 자른 endPoint를 계산해서 반환한다.
+     *  * 최대 길이를 넘어 간 경우, 최대 길이만큼 자른 endPoint 반환.
+     *  * 최대 길이를 넘어 가지 않은 경우, 받은 endPoint 그대로 반환.
+     */
+    private fun calcMaxEndPoint(start: Point, end: Point): Point {
+        val length = hypot(start.x - end.x, start.y - end.y)
+
+        return if (length > MAX_GUIDELINE_LENGTH) {
+            // 비율 = (최대 길이) / (현재 안내선 길이)
+            val ratio = MAX_GUIDELINE_LENGTH / length
+
+            // 안내선의 x 길이, y 길이를 비율에 맞게 자른다.
+            val lengthX = (end.x - startPoint.x) * ratio
+            val lengthY = (end.y - startPoint.y) * ratio
+
+            // start point 에서 자른 안내선 길이만큼 더한 end point 를 적용한다.
+            Point(startPoint.x + lengthX, startPoint.y + lengthY)
+        } else end
+    }
 
     /**
      * 안내선의 x 변량이 음수면 -1을 반환하고, 양수면 1을 반환한다.

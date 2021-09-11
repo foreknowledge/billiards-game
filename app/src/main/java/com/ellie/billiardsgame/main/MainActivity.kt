@@ -333,7 +333,7 @@ class MainActivity : AppCompatActivity() {
          */
         override fun onMainButtonClick() {
             // 안내선의 길이, 방향에 따라 초기 공 속도 계산
-            val velocity = binding.lineDrawer.getVelocity()
+            val velocity = mainViewModel.guideline.velocity
 
             // 공의 속도가 0이 아닌 경우, 시뮬레이션 시작 & 실행 모드로 변경
             if (velocity.x * velocity.y != 0f) {
@@ -346,11 +346,14 @@ class MainActivity : AppCompatActivity() {
             whiteBallGestureDetector.onTouchEvent(event)
             if (!flingMode) {
                 // fling 모드가 아닌 경우, 안내선 보여주기
-                val whiteBallCenter = Point(
-                    mainViewModel.whiteBall.centerX,
-                    mainViewModel.whiteBall.centerY
-                )
-                binding.lineDrawer.drawLine(whiteBallCenter.x, whiteBallCenter.y, event.rawX, event.rawY)
+                with(binding.lineDrawer) {
+                    val whiteBallCenter = Point(
+                        mainViewModel.whiteBall.centerX,
+                        mainViewModel.whiteBall.centerY
+                    )
+                    val endPoint = Point(event.rawX - x, event.rawY - y)
+                    mainViewModel.guideline.setPoints(whiteBallCenter, endPoint)
+                }
             }
 
             return true

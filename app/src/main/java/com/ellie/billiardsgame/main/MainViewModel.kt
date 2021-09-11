@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.model.Ball
+import com.ellie.billiardsgame.model.Guideline
 import com.ellie.billiardsgame.model.Point
 import java.util.concurrent.Executors
 import kotlin.math.abs
@@ -22,6 +23,8 @@ class MainViewModel : ViewModel() {
 
     // 시뮬레이션 실행을 제어하는 변수
     private var isSimulating = false
+
+    val guideline = Guideline()
 
     private var boundary: Rect = Rect()
 
