@@ -37,7 +37,7 @@
             app:layout_constraintStart_toStartOf="@id/poolTableEdge"
             app:layout_constraintTop_toTopOf="@id/poolTableEdge" />
 
-        <com.ellie.billiardsgame.customview.BallView
+        <View
             android:id="@+id/whiteBallView"
             android:layout_width="@dimen/ball_diameter_size"
             android:layout_height="@dimen/ball_diameter_size"
@@ -50,7 +50,7 @@
             app:layout_constraintVertical_bias="0.7"
             app:position="@{viewModel.whiteBallPosition}" />
 
-        <com.ellie.billiardsgame.customview.BallView
+        <View
             android:id="@+id/redBallView1"
             android:layout_width="@dimen/ball_diameter_size"
             android:layout_height="@dimen/ball_diameter_size"
@@ -64,7 +64,7 @@
             app:layout_constraintVertical_bias="0.4"
             app:position="@{viewModel.redBall1Position}" />
 
-        <com.ellie.billiardsgame.customview.BallView
+        <View
             android:id="@+id/redBallView2"
             android:layout_width="@dimen/ball_diameter_size"
             android:layout_height="@dimen/ball_diameter_size"

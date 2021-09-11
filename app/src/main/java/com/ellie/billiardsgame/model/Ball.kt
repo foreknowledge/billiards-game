@@ -3,6 +3,7 @@ package com.ellie.billiardsgame.model
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ellie.billiardsgame.FRAME_DURATION_MS
+import com.ellie.billiardsgame.GlobalApplication
 
 /**
  * 공의 위치, 속도를 관리한다.
@@ -14,6 +15,11 @@ class Ball {
 
     val x get() = point.value!!.x
     val y get() = point.value!!.y
+
+    val radius = GlobalApplication.ballRadius
+
+    val centerX: Float get() = x + radius
+    val centerY: Float get() = y + radius
 
     // 공의 속도
     var dx = 0f

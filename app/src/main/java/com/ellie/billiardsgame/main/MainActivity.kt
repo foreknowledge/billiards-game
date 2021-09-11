@@ -13,7 +13,6 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.ellie.billiardsgame.*
-import com.ellie.billiardsgame.customview.BallView
 import com.ellie.billiardsgame.databinding.ActivityMainBinding
 import com.ellie.billiardsgame.model.Point
 import kotlin.math.hypot
@@ -174,12 +173,12 @@ class MainActivity : AppCompatActivity() {
 
         // 빨간 공 터치 리스너 설정
         binding.redBallView1.setOnTouchListener { v, event ->
-            state.onRedBallTouch(v as BallView, event)
+            state.onRedBallTouch(v, event)
         }
 
         // 빨간 공 터치 리스너 설정
         binding.redBallView2.setOnTouchListener { v, event ->
-            state.onRedBallTouch(v as BallView, event)
+            state.onRedBallTouch(v, event)
         }
 
         // 메인 버튼 클릭 리스너 설정
@@ -242,7 +241,7 @@ class MainActivity : AppCompatActivity() {
         /**
          * 빨간 공 터치 시 호출된다.
          */
-        abstract fun onRedBallTouch(ballView: BallView, event: MotionEvent): Boolean
+        abstract fun onRedBallTouch(ballView: View, event: MotionEvent): Boolean
 
         /**
          * 메인 버튼 UI를 변경한다.
@@ -340,15 +339,17 @@ class MainActivity : AppCompatActivity() {
             whiteBallGestureDetector.onTouchEvent(event)
             if (!flingMode) {
                 // fling 모드가 아닌 경우, 안내선 보여주기
-                with (binding.whiteBallView) {
-                    binding.lineDrawer.drawLine(centerX, centerY, event.rawX, event.rawY)
-                }
+                val whiteBallCenter = Point(
+                    mainViewModel.whiteBall.centerX,
+                    mainViewModel.whiteBall.centerY
+                )
+                binding.lineDrawer.drawLine(whiteBallCenter.x, whiteBallCenter.y, event.rawX, event.rawY)
             }
 
             return true
         }
 
-        override fun onRedBallTouch(ballView: BallView, event: MotionEvent): Boolean {
+        override fun onRedBallTouch(ballView: View, event: MotionEvent): Boolean {
             redBallGestureDetector.onTouchEvent(event)
 
             return true
@@ -377,8 +378,9 @@ class MainActivity : AppCompatActivity() {
 
         override fun onWhiteBallTouch(event: MotionEvent): Boolean {
             if (event.action == MotionEvent.ACTION_MOVE) {
-                val x = event.rawX - binding.whiteBallView.radius
-                val y = event.rawY - binding.whiteBallView.radius
+                val ballRadius = mainViewModel.whiteBall.radius
+                val x = event.rawX - ballRadius
+                val y = event.rawY - ballRadius
 
                 // 터치 위치에 따라 공 위치 변경
                 with(mainViewModel) {
@@ -389,10 +391,11 @@ class MainActivity : AppCompatActivity() {
             return true
         }
 
-        override fun onRedBallTouch(ballView: BallView, event: MotionEvent): Boolean {
+        override fun onRedBallTouch(ballView: View, event: MotionEvent): Boolean {
             if (event.action == MotionEvent.ACTION_MOVE) {
-                val x = event.rawX - ballView.radius
-                val y = event.rawY - ballView.radius
+                val ballRadius = mainViewModel.whiteBall.radius
+                val x = event.rawX - ballRadius
+                val y = event.rawY - ballRadius
 
                 // 터치 위치에 따라 해당 공 위치 변경
                 with(mainViewModel) {
@@ -433,6 +436,6 @@ class MainActivity : AppCompatActivity() {
 
         override fun onWhiteBallTouch(event: MotionEvent) = false
 
-        override fun onRedBallTouch(ballView: BallView, event: MotionEvent) = false
+        override fun onRedBallTouch(ballView: View, event: MotionEvent) = false
     }
 }
