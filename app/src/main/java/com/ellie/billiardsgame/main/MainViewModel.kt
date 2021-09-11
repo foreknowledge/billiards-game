@@ -36,7 +36,7 @@ class MainViewModel : ViewModel() {
     /**
      * 당구대의 Boundary 데이터를 설정한다.
      */
-    fun setBoundary(top: Int, right: Int, bottom: Int, left: Int) {
+    fun setBoundary(left: Int, top: Int, right: Int, bottom: Int) {
         val diameter = GlobalApplication.ballDiameter.toInt()
         boundary = Rect(left, top, right - diameter, bottom - diameter)
     }

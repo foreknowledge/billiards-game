@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
 
             // 당구대 경계 초기화
             with (binding.poolTableView) {
-                setBoundary(top, right, bottom, left)
+                setBoundary(left, top, right, bottom)
             }
         }
     }
