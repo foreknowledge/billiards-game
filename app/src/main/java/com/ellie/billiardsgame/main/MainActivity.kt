@@ -77,6 +77,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //----------------------------------------------------------
+    // Internal support interface.
+    //
+
+    /**
+     * Data Binding 인스턴스를 초기화한다.
+     */
+    private fun initActivityMainBinding() {
+        binding.lifecycleOwner = this
+        binding.run {
+            viewModel = mainViewModel
+        }
+    }
+
     private fun hideSystemUI() {
         // Enables regular immersive mode.
         // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
@@ -94,20 +108,6 @@ class MainActivity : AppCompatActivity() {
                     or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
-        }
-    }
-
-    //----------------------------------------------------------
-    // Internal support interface.
-    //
-
-    /**
-     * Data Binding 인스턴스를 초기화한다.
-     */
-    private fun initActivityMainBinding() {
-        binding.lifecycleOwner = this
-        binding.run {
-            viewModel = mainViewModel
         }
     }
 
