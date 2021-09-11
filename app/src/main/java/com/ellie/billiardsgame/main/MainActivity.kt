@@ -49,10 +49,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val binding: ActivityMainBinding by lazy {
-        // Status Bar 없는 화면 설정
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
-
         DataBindingUtil.setContentView(this, R.layout.activity_main)
     }
 
