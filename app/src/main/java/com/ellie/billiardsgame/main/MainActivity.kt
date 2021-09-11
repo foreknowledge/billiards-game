@@ -125,9 +125,9 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.run {
             // 공의 위치 초기화
             with(binding) {
-                updateBall(WHITE, whiteBallView.x, whiteBallView.y)
-                updateBall(RED1, redBallView1.x, redBallView1.y)
-                updateBall(RED2, redBallView2.x, redBallView2.y)
+                whiteBall.update(Point(whiteBallView.x, whiteBallView.y))
+                redBall1.update(Point(redBallView1.x, redBallView1.y))
+                redBall2.update(Point(redBallView2.x, redBallView2.y))
             }
 
             // 당구대 경계 초기화

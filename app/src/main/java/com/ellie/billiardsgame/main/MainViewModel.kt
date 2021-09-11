@@ -44,14 +44,6 @@ class MainViewModel : ViewModel() {
     }
 
     /**
-     * 당구공의 위치를 업데이트 한다.
-     * @param ballId ball을 구별하는 id값
-     */
-    fun updateBall(ballId: Int, x: Float, y: Float) {
-        balls[ballId].update(Point(x, y))
-    }
-
-    /**
      * 당구공의 위치를 충돌을 고려해 업데이트한다.
      */
     fun Ball.updatePosition(x: Float, y: Float) {
