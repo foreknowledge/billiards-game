@@ -112,10 +112,14 @@ class MainActivity : AppCompatActivity() {
      * View가 화면에 그려졌을 때 콜백 리스너를 추가한다.
      */
     private fun addGlobalLayoutListener() {
-        binding.parentLayout.viewTreeObserver.addOnGlobalLayoutListener {
-            // ViewModel의 데이터 초기화
-            initDataInViewModel()
-        }
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+                // ViewModel의 데이터 초기화
+                initDataInViewModel()
+            }
+        })
     }
 
     /**
