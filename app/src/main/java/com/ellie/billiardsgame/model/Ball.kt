@@ -8,28 +8,12 @@ import com.ellie.billiardsgame.FRAME_DURATION_MS
  * 공의 위치, 속도를 관리한다.
  */
 class Ball {
-
-    //----------------------------------------------------------
-    // Instance data.
-    //
-
-    // 공의 위치를 내부에서 변경하기 위한 변수
+    // 공의 위치
     private val _point = MutableLiveData(Point())
-
-    //----------------------------------------------------------
-    // Public interface.
-    //
-
-    // 공의 위치가 변경되었을 때 외부에서 관찰(Observing)하기 위한 변수
     val point: LiveData<Point> = _point
 
-    // 공의 위치의 x 좌표
-    val x
-        get() = point.value!!.x
-
-    // 공의 위치의 y 좌표
-    val y
-        get() = point.value!!.y
+    val x get() = point.value!!.x
+    val y get() = point.value!!.y
 
     // 공의 속도
     var dx = 0f
@@ -38,11 +22,8 @@ class Ball {
         private set
 
     // 다음 위치 = 이전 위치 + 속도
-    val nextX: Float
-        get() = x + dx
-
-    val nextY: Float
-        get() = y + dy
+    val nextX: Float get() = x + dx
+    val nextY: Float get() = y + dy
 
     fun update(point: Point) {
         _point.postValue(point)
@@ -53,19 +34,8 @@ class Ball {
         this.dy = dy
     }
 
-    /**
-     * 공의 x축 이동 방향을 바꾼다.
-     */
-    fun changeDirectionX() {
-        dx = -dx
-    }
-
-    /**
-     * 공의 y축 이동 방향을 바꾼다.
-     */
-    fun changeDirectionY() {
-        dy = -dy
-    }
+    fun changeDirectionX() { dx = -dx }
+    fun changeDirectionY() { dy = -dy }
 
     /**
      * 마찰력을 적용해서 공의 속도를 감소시킨다.
