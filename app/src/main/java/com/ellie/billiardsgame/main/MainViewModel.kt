@@ -33,10 +33,10 @@ class MainViewModel : ViewModel() {
     private val balls = listOf(Ball(), Ball(), Ball())
 
     // 당구공들의 시작 위치를 가지고 있는 배열
-    private val homePositions = listOf(Point(), Point(), Point())
+    private val startBallPositions = listOf(Point(), Point(), Point())
 
     // 공의 충돌 관련 작업을 담당
-    private val ballCollisionManager = BallCollisionManager(balls)
+    private val collisionManager = BallCollisionManager(balls)
 
     // 각 공의 Reference
     private val whiteBall: Ball = balls[WHITE]
@@ -59,7 +59,7 @@ class MainViewModel : ViewModel() {
      * 당구대의 Boundary 데이터를 설정한다.
      */
     fun setBoundary(top: Int, right: Int, bottom: Int, left: Int) {
-        ballCollisionManager.setBoundary(Boundary(Rect(left, top, right, bottom)))
+        collisionManager.setBoundary(Boundary(Rect(left, top, right, bottom)))
     }
 
     /**
@@ -74,7 +74,7 @@ class MainViewModel : ViewModel() {
      * 당구공의 위치를 충돌을 고려해 업데이트한다.
      */
     fun updateBallPosition(ballId: Int, x: Float, y: Float) {
-        ballCollisionManager.updateBallConsideringTheConflict(ballId, x, y)
+        collisionManager.updateBallConsideringTheConflict(ballId, x, y)
     }
 
     /**
@@ -145,7 +145,7 @@ class MainViewModel : ViewModel() {
      */
     private fun captureBallPositions() {
         for (i in balls.indices) {
-            homePositions[i].update(balls[i].x, balls[i].y)
+            startBallPositions[i].update(balls[i].x, balls[i].y)
         }
     }
 
@@ -156,7 +156,7 @@ class MainViewModel : ViewModel() {
         for (i in balls.indices) {
             with (balls[i]) {
                 decreaseVelocity()
-                ballCollisionManager.updateBallConsideringTheConflict(i, nextX, nextY)
+                collisionManager.updateBallConsideringTheConflict(i, nextX, nextY)
             }
         }
     }
@@ -181,7 +181,7 @@ class MainViewModel : ViewModel() {
      */
     private fun restoreBallPositions() {
         for (i in balls.indices) {
-            balls[i].update(homePositions[i])
+            balls[i].update(startBallPositions[i])
         }
     }
 }
