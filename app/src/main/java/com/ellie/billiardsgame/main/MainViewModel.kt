@@ -15,13 +15,8 @@ import kotlin.math.abs
  * View를 위한 데이터를 조작한다.
  */
 class MainViewModel : ViewModel() {
-
-    //----------------------------------------------------------
-    // Instance data.
-    //
-
-    // 게임 모드를 내부에서 변경하기 위한 변수
     private val _curGameMode = MutableLiveData(GameMode.READY)
+    val curGameMode: LiveData<GameMode> = _curGameMode
 
     // 스레드를 실행하는 executor
     private val executor = Executors.newFixedThreadPool(3)
@@ -42,13 +37,6 @@ class MainViewModel : ViewModel() {
     private val whiteBall: Ball = balls[WHITE]
     private val redBall1: Ball = balls[RED1]
     private val redBall2: Ball = balls[RED2]
-
-    //----------------------------------------------------------
-    // Public interface.
-    //
-
-    // 게임 모드가 변경되었을 때 외부에서 관찰(Observing)하기 위한 변수
-    val curGameMode: LiveData<GameMode> = _curGameMode
 
     // 각 공의 위치
     val whiteBallPosition = whiteBall.point
