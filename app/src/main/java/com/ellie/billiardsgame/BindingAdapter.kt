@@ -26,11 +26,11 @@ fun SeekBar.setPower(start: Point, end: Point) {
 
 @BindingAdapter("startPoint", "endPoint")
 fun SeekBar.setDirection(start: Point, end: Point) {
-    val v1 = Point(0f, -1f)
+    val v1 = Point(0f, 1f)
     val v2 = end - start
     var theta = acos((v1 * v2) / (v1.size() * v2.size()))
 
-    if (v2.x < 0)
+    if (v2.x > 0)
         theta = (2 * Math.PI).toFloat() - theta
 
     progress = (theta * 100 / (2 * Math.PI)).toInt()

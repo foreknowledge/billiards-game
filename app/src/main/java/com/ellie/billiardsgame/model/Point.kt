@@ -19,11 +19,11 @@ data class Point(
 
     fun size() = hypot(x, y)
 
-    operator fun plus(point: Point) = Point(point.x + x, point.y + y)
+    operator fun plus(point: Point) = Point(x + point.x, y + point.y)
 
-    operator fun minus(point: Point) = Point(point.x - x, point.y - y)
+    operator fun minus(point: Point) = Point(x - point.x, y - point.y)
 
-    operator fun times(scalar: Float) = Point(scalar * x, scalar * y)
+    operator fun times(scalar: Float) = Point(x * scalar, y * scalar)
 
-    operator fun times(point: Point) = point.x * x + point.y * y
+    operator fun times(point: Point) = x * point.x + y * point.y
 }
