@@ -44,44 +44,6 @@ class MainViewModel : ViewModel() {
         boundary = Rect(left, top, right - diameter, bottom - diameter)
     }
 
-    /**
-     * 당구공의 위치를 충돌을 고려해 업데이트한다.
-     */
-    fun Ball.updatePosition(x: Float, y: Float) {
-        val nextPoint = CollisionDetector.getAdjustedPointToBound(x, y, boundary)
-
-        if (nextPoint.x != x) changeDirectionX()
-        if (nextPoint.y != y) changeDirectionY()
-
-        val collidedBall = getCollidedBall(this, nextPoint)
-        if (collidedBall != null){
-            // 충돌한 경우
-            val (velocity1, velocity2) = CollisionCalculator.calculateBallsVelocity(this, collidedBall)
-            this.setVelocity(velocity1.x, velocity1.y)
-            collidedBall.setVelocity(velocity2.x, velocity2.y)
-        } else {
-            // 충돌하지 않은 경우
-            this.update(nextPoint)
-        }
-    }
-
-    private fun getCollidedBall(ball: Ball, position: Point): Ball? {
-        // 모든 공을 돌면서 확인
-        balls.forEach {
-            // 자기 자신이면 Pass
-            if (it == ball)
-                return@forEach
-            if (CollisionDetector.isBallCollided(position, it.point.value!!))
-                return it
-        }
-
-        // 충돌한 공 없으면 null 반환
-        return null
-    }
-
-    /**
-     * 게임 모드를 변경한다.
-     */
     fun changeGameMode(gameMode: GameMode) {
         _curGameMode.postValue(gameMode)
     }
@@ -120,9 +82,44 @@ class MainViewModel : ViewModel() {
         restoreBallPositions()
     }
 
+    /**
+     * 당구공의 위치를 충돌을 고려해 업데이트한다.
+     */
+    fun Ball.updatePosition(x: Float, y: Float) {
+        val nextPoint = CollisionDetector.getAdjustedPointToBound(x, y, boundary)
+
+        if (nextPoint.x != x) changeDirectionX()
+        if (nextPoint.y != y) changeDirectionY()
+
+        val collidedBall = getCollidedBall(this, nextPoint)
+        if (collidedBall != null){
+            // 충돌한 경우
+            val (velocity1, velocity2) = CollisionCalculator.calculateBallsVelocity(this, collidedBall)
+            this.setVelocity(velocity1.x, velocity1.y)
+            collidedBall.setVelocity(velocity2.x, velocity2.y)
+        } else {
+            // 충돌하지 않은 경우
+            this.update(nextPoint)
+        }
+    }
+
     //----------------------------------------------------------
     // Internal support interface.
     //
+
+    private fun getCollidedBall(ball: Ball, position: Point): Ball? {
+        // 모든 공을 돌면서 확인
+        balls.forEach {
+            // 자기 자신이면 Pass
+            if (it == ball)
+                return@forEach
+            if (CollisionDetector.isBallCollided(position, it.point.value!!))
+                return it
+        }
+
+        // 충돌한 공 없으면 null 반환
+        return null
+    }
 
     private fun initAllBallsVelocity(velocity: Point) {
         // 흰 공은 시작 속도를 가진 상태
