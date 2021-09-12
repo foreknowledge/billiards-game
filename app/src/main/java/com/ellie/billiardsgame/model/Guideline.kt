@@ -51,9 +51,10 @@ class Guideline {
      * 최대 길이를 고려해 endPoint를 계산해서 반환한다.
      */
     private fun calcMaxEndPoint(start: Point, end: Point): Point {
-        val length = min((start - end).size(), MAX_GUIDELINE_LENGTH)
-        val lengthVector = (end - start).normalize() * length
-
-        return start + lengthVector
+        val length = (start - end).size()
+        return if (length > MAX_GUIDELINE_LENGTH) {
+            val lengthVector = (end - start).normalize() * MAX_GUIDELINE_LENGTH
+            start + lengthVector
+        } else end
     }
 }
