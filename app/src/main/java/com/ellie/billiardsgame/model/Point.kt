@@ -19,6 +19,8 @@ data class Point(
 
     fun size() = hypot(x, y)
 
+    fun normalize() = Point(x, y) / size()
+
     operator fun plus(point: Point) = Point(x + point.x, y + point.y)
 
     operator fun minus(point: Point) = Point(x - point.x, y - point.y)
@@ -26,4 +28,6 @@ data class Point(
     operator fun times(scalar: Float) = Point(x * scalar, y * scalar)
 
     operator fun times(point: Point) = x * point.x + y * point.y
+
+    operator fun div(scalar: Float) = Point(x / scalar, y / scalar)
 }
