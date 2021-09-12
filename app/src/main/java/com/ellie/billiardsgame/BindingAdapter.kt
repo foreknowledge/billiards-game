@@ -11,12 +11,7 @@ fun View.setPosition(point: Point) {
     y = point.y
 }
 
-@BindingAdapter("guidelineStart")
-fun LineCanvasView.setGuidelineStart(start: Point) {
-    drawLine(start = start)
-}
-
-@BindingAdapter("guidelineEnd")
-fun LineCanvasView.setGuidelineEnd(end: Point) {
-    drawLine(end = end)
+@BindingAdapter("guidelineStart", "guidelineEnd")
+fun LineCanvasView.setGuideline(start: Point, end: Point) {
+    drawLine(start, end)
 }

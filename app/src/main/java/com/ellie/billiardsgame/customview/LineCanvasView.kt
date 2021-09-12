@@ -41,7 +41,7 @@ class LineCanvasView : View {
         canvas.drawLines(points, paint)
     }
 
-    fun drawLine(start: Point = startPoint, end: Point = endPoint) {
+    fun drawLine(start: Point, end: Point) {
         paint.color = Color.CYAN
         // 상대좌표로 변환해서 좌표를 설정
         startPoint = start
