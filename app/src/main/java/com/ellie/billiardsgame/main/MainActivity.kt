@@ -81,9 +81,6 @@ class MainActivity : AppCompatActivity() {
     // Internal support interface.
     //
 
-    /**
-     * Data Binding 인스턴스를 초기화한다.
-     */
     private fun initActivityMainBinding() {
         binding.lifecycleOwner = this
         binding.run {
@@ -111,9 +108,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * View가 화면에 그려졌을 때 콜백 리스너를 추가한다.
-     */
     private fun addGlobalLayoutListener() {
         binding.root.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -125,9 +119,6 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    /**
-     * ViewModel의 데이터를 초기화한다.
-     */
     private fun initDataInViewModel() {
         mainViewModel.run {
             // 공의 위치 초기화
@@ -169,31 +160,23 @@ class MainActivity : AppCompatActivity() {
         binding.lineDrawer.removeLine()
     }
 
-    /**
-     * View에 리스너를 설정한다.
-     */
     private fun setViewListeners() {
-        // 흰 공 터치 리스너 설정
         binding.whiteBallView.setOnTouchListener { _, event ->
             state.onWhiteBallTouch(event)
         }
 
-        // 빨간 공 터치 리스너 설정
         binding.redBallView1.setOnTouchListener { v, event ->
             state.onRedBallTouch(v, event)
         }
 
-        // 빨간 공 터치 리스너 설정
         binding.redBallView2.setOnTouchListener { v, event ->
             state.onRedBallTouch(v, event)
         }
 
-        // 메인 버튼 클릭 리스너 설정
         binding.mainButton.setOnClickListener {
             state.onMainButtonClick()
         }
 
-        // Fling 버튼 클릭 리스너 설정
         binding.flingButton.setOnClickListener {
             // toggle
             flingMode = !flingMode
@@ -235,24 +218,12 @@ class MainActivity : AppCompatActivity() {
         // 메인 버튼 색상
         abstract val mainBtnColor: Int
 
-        /**
-         * 메인 버튼 클릭 시 호출된다.
-         */
         abstract fun onMainButtonClick()
 
-        /**
-         * 흰 공 터치 시 호출된다.
-         */
         abstract fun onWhiteBallTouch(event: MotionEvent): Boolean
 
-        /**
-         * 빨간 공 터치 시 호출된다.
-         */
         abstract fun onRedBallTouch(ballView: View, event: MotionEvent): Boolean
 
-        /**
-         * 메인 버튼 UI를 변경한다.
-         */
         fun changeButtonUI() {
             binding.mainButton.run {
                 text = mainBtnText
@@ -270,7 +241,6 @@ class MainActivity : AppCompatActivity() {
         // Instance data.
         //
 
-        // 빨간 공 Gesture Detector
         private val redBallGestureDetector by lazy {
             GestureDetectorCompat(this@MainActivity, object: GestureDetector.SimpleOnGestureListener() {
                 override fun onDoubleTap(e: MotionEvent?): Boolean {
@@ -280,7 +250,6 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        // 흰 공 Gesture Detector
         private val whiteBallGestureDetector by lazy {
             GestureDetectorCompat(this@MainActivity, object: GestureDetector.SimpleOnGestureListener() {
                 override fun onDoubleTap(e: MotionEvent?): Boolean {
@@ -320,10 +289,6 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
-
-        //----------------------------------------------------------
-        // Public interface.
-        //
 
         override val mainBtnText: String by lazy { this@MainActivity.getString(R.string.btn_shot) }
         override val mainBtnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorShotButton, null) }
@@ -370,11 +335,6 @@ class MainActivity : AppCompatActivity() {
      * 편집 모드일 때 UI Event Handler.
      */
     inner class EditState : State() {
-
-        //----------------------------------------------------------
-        // Public interface.
-        //
-
         override val mainBtnText: String by lazy { this@MainActivity.getString(R.string.btn_ok) }
         override val mainBtnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorOKButton, null) }
 
@@ -424,11 +384,6 @@ class MainActivity : AppCompatActivity() {
      * 실행 모드일 때 UI Event Handler.
      */
     inner class ExecuteState : State() {
-
-        //----------------------------------------------------------
-        // Public interface.
-        //
-
         override val mainBtnText: String by lazy { this@MainActivity.getString(R.string.btn_cancel) }
         override val mainBtnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorCancelButton, null) }
 

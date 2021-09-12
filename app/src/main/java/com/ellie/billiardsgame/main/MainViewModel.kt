@@ -86,9 +86,6 @@ class MainViewModel : ViewModel() {
         _curGameMode.postValue(gameMode)
     }
 
-    /**
-     * 당구 시뮬레이션을 시작한다.
-     */
     fun startSimulation(velocity: Point) {
         // 공의 초기 속도 설정
         initAllBallsVelocity(velocity)
@@ -115,9 +112,6 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    /**
-     * 시뮬레이션을 취소한다.
-     */
     fun cancelSimulation() {
         // 시뮬레이션 종료
         isSimulating = false
@@ -130,9 +124,6 @@ class MainViewModel : ViewModel() {
     // Internal support interface.
     //
 
-    /**
-     * 공들의 시작 속도를 설정한다.
-     */
     private fun initAllBallsVelocity(velocity: Point) {
         // 흰 공은 시작 속도를 가진 상태
         whiteBall.setVelocity(velocity.x, velocity.y)
@@ -142,18 +133,12 @@ class MainViewModel : ViewModel() {
         redBall2.setVelocity(0f, 0f)
     }
 
-    /**
-     * 현재 공들의 위치를 저장한다.
-     */
     private fun captureBallPositions() {
         for (i in balls.indices) {
             startBallPositions[i].update(balls[i].x, balls[i].y)
         }
     }
 
-    /**
-     * 모든 공을 움직인다.
-     */
     private fun moveAllBalls() {
         balls.forEach {
             it.decreaseVelocity()
@@ -161,9 +146,6 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    /**
-     * 모든 공이 멈추었는지 확인한다.
-     */
     private fun noMovingBall(): Boolean {
         balls.forEach { ball ->
             if (abs(ball.dx) >= STOP_THRESHOLD || abs(ball.dy) >= STOP_THRESHOLD) {
@@ -176,9 +158,6 @@ class MainViewModel : ViewModel() {
         return true
     }
 
-    /**
-     * 모든 공을 원 위치로 되돌린다.
-     */
     private fun restoreBallPositions() {
         for (i in balls.indices) {
             balls[i].update(startBallPositions[i])
