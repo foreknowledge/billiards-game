@@ -1,5 +1,7 @@
 package com.ellie.billiardsgame.model
 
+import kotlin.math.hypot
+
 data class Point(
     var x: Float = 0f,
     var y: Float = 0f
@@ -15,7 +17,11 @@ data class Point(
         y = point.y
     }
 
+    fun size() = hypot(x, y)
+
     operator fun plus(point: Point) = Point(point.x + x, point.y + y)
+
+    operator fun minus(point: Point) = Point(point.x - x, point.y - y)
 
     operator fun times(scalar: Float) = Point(scalar * x, scalar * y)
 
