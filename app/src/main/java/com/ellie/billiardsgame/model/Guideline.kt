@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.ellie.billiardsgame.MAX_GUIDELINE_LENGTH
 import com.ellie.billiardsgame.MAX_POWER
 import kotlin.math.hypot
+import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -47,23 +48,12 @@ class Guideline {
     }
 
     /**
-     * 최대 길이 만큼 자른 endPoint를 계산해서 반환한다.
-     *  * 최대 길이를 넘어 간 경우, 최대 길이만큼 자른 endPoint 반환.
-     *  * 최대 길이를 넘어 가지 않은 경우, 받은 endPoint 그대로 반환.
+     * 최대 길이를 고려해 endPoint를 계산해서 반환한다.
      */
     private fun calcMaxEndPoint(start: Point, end: Point): Point {
-        val length = (start - end).size()
+        val length = min((start - end).size(), MAX_GUIDELINE_LENGTH)
+        val lengthVector = (end - start).normalize() * length
 
-        return if (length > MAX_GUIDELINE_LENGTH) {
-            // 비율 = (최대 길이) / (현재 안내선 길이)
-            val ratio = MAX_GUIDELINE_LENGTH / length
-
-            // 안내선의 x 길이, y 길이를 비율에 맞게 자른다.
-            val lengthX = (end.x - startPoint.x) * ratio
-            val lengthY = (end.y - startPoint.y) * ratio
-
-            // start point 에서 자른 안내선 길이만큼 더한 end point 를 적용한다.
-            Point(startPoint.x + lengthX, startPoint.y + lengthY)
-        } else end
+        return start + lengthVector
     }
 }
