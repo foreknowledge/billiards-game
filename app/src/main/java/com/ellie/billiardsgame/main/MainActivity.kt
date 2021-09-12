@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.databinding.ActivityMainBinding
 import com.ellie.billiardsgame.model.Point
-import kotlin.math.hypot
 
 /**
  * 당구 게임은 3가지 게임 모드로 동작한다. (편집 모드 - 준비 모드 - 실행 모드)
@@ -279,7 +278,7 @@ class MainActivity : AppCompatActivity() {
                  * 초기 속도가 최대 속도를 넘어가면 제한한다.
                  */
                 private fun applyMaxVelocity(velocity: Point) {
-                    val velocitySize = hypot(velocity.x, velocity.y)
+                    val velocitySize = velocity.size()
                     if (velocitySize > MAX_POWER) {
                         // 최대 속도를 넘어가면 비율에 따른 x, y 속도 계산
                         val ratio = MAX_POWER / velocitySize

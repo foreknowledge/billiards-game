@@ -50,7 +50,7 @@ class Guideline {
      *  * 최대 길이를 넘어 가지 않은 경우, 받은 endPoint 그대로 반환.
      */
     private fun calcMaxEndPoint(start: Point, end: Point): Point {
-        val length = hypot(start.x - end.x, start.y - end.y)
+        val length = (start - end).size()
 
         return if (length > MAX_GUIDELINE_LENGTH) {
             // 비율 = (최대 길이) / (현재 안내선 길이)

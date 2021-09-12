@@ -1,13 +1,11 @@
 package com.ellie.billiardsgame
 
-import android.util.Log
 import android.view.View
 import android.widget.SeekBar
 import androidx.databinding.BindingAdapter
 import com.ellie.billiardsgame.customview.LineCanvasView
 import com.ellie.billiardsgame.model.Point
 import kotlin.math.acos
-import kotlin.math.hypot
 
 @BindingAdapter("position")
 fun View.setPosition(point: Point) {
@@ -22,7 +20,7 @@ fun LineCanvasView.setGuideline(start: Point, end: Point) {
 
 @BindingAdapter("guidelineStart", "guidelineEnd")
 fun SeekBar.setPower(start: Point, end: Point) {
-    val length = hypot(start.x - end.x, start.y - end.y)
+    val length = (start - end).size()
     progress = (length / MAX_GUIDELINE_LENGTH * 100).toInt()
 }
 

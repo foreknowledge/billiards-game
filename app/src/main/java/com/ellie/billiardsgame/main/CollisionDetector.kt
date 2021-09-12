@@ -3,7 +3,6 @@ package com.ellie.billiardsgame.main
 import android.graphics.Rect
 import com.ellie.billiardsgame.GlobalApplication
 import com.ellie.billiardsgame.model.Point
-import kotlin.math.hypot
 
 /**
  * 공의 충돌 여부를 판단한다.
@@ -23,7 +22,7 @@ object CollisionDetector {
      * 공 2개가 충돌했는지 여부를 계산한다.
      */
     fun isBallCollided(pointA: Point, pointB: Point) =
-        hypot(pointA.x - pointB.x, pointA.y - pointB.y) < GlobalApplication.ballDiameter
+        (pointA - pointB).size() < GlobalApplication.ballDiameter
 
     //----------------------------------------------------------
     // Internal support interface.
