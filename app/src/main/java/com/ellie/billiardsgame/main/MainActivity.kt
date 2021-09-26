@@ -16,6 +16,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.databinding.ActivityMainBinding
 import com.ellie.billiardsgame.model.Point
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * 당구 게임은 3가지 게임 모드로 동작한다. (편집 모드 - 준비 모드 - 실행 모드)
@@ -132,6 +135,16 @@ class MainActivity : AppCompatActivity() {
             with (binding.poolTableView) {
                 setBoundary(left, top, right, bottom)
             }
+
+            // 안내선 초기화
+            CoroutineScope(Dispatchers.Main).launch {
+                val startPoint = Point(
+                    mainViewModel.whiteBall.centerX,
+                    mainViewModel.whiteBall.centerY)
+                val quarterLength = MAX_GUIDELINE_LENGTH / 4
+                val endPoint = startPoint + Point(0f, -quarterLength)
+                mainViewModel.guideline.setPoints(startPoint, endPoint)
+            }
         }
     }
 
@@ -156,8 +169,20 @@ class MainActivity : AppCompatActivity() {
         // 변경된 모드에 따라 Button UI 변경
         state.changeButtonUI()
 
-        // 기존에 있던 안내선 지우기
-        binding.lineDrawer.removeLine()
+        // 안내선 초기화
+        if (mode != GameMode.READY) {
+            // 안내선 지우기
+            binding.lineDrawer.removeLine()
+        } else {
+            // 안내선 다시 그리기
+            val startPoint = Point(
+                mainViewModel.whiteBall.centerX,
+                mainViewModel.whiteBall.centerY
+            )
+            val quarterLength = MAX_GUIDELINE_LENGTH / 4
+            val endPoint = startPoint + Point(0f, -quarterLength)
+            mainViewModel.guideline.setPoints(startPoint, endPoint)
+        }
     }
 
     private fun setViewListeners() {
