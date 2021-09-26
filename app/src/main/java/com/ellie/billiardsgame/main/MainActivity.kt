@@ -198,6 +198,23 @@ class MainActivity : AppCompatActivity() {
             state.onRedBallTouch(v, event)
         }
 
+        binding.directionSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (!GlobalApplication.isScreenTouchMode) {
+                    val theta = progress.toDouble() * (2 * Math.PI) / 100
+                    mainViewModel.guideline.setDirection(theta)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                GlobalApplication.isScreenTouchMode = false
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                GlobalApplication.isScreenTouchMode = true
+            }
+        })
+
         binding.powerSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (!GlobalApplication.isScreenTouchMode && progress != 0) {

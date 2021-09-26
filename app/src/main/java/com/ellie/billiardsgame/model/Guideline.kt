@@ -4,10 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ellie.billiardsgame.MAX_GUIDELINE_LENGTH
 import com.ellie.billiardsgame.MAX_POWER
-import kotlin.math.hypot
-import kotlin.math.min
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
 /**
  * 안내선의 데이터를 관리한다.
@@ -80,5 +77,21 @@ class Guideline {
 
         // start point 에서 자른 안내선 길이만큼 더한 end point 를 적용한다.
         _end.postValue(startPoint + lengthVector)
+    }
+
+    /**
+     * 안내선의 길이를 유지한 채 방향을 변경한다.
+     */
+    fun setDirection(theta: Double) {
+        val sinTheta = sin(theta).toFloat()
+        val cosTheta = cos(theta).toFloat()
+
+        val v1 = Point(0f, 1f)
+        val v2 = Point(
+            v1.x * cosTheta + v1.y * -sinTheta,
+            v1.x * sinTheta + v1.y * cosTheta
+        )
+
+        _end.postValue(startPoint + v2 * length)
     }
 }

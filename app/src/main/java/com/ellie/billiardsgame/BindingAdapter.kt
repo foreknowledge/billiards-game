@@ -28,6 +28,8 @@ fun SeekBar.setPower(start: Point, end: Point) {
 
 @BindingAdapter("startPoint", "endPoint")
 fun SeekBar.setDirection(start: Point, end: Point) {
+    if (!GlobalApplication.isScreenTouchMode) return
+
     val v1 = Point(0f, 1f)
     val v2 = end - start
 
