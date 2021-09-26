@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.widget.SeekBar
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -171,6 +172,23 @@ class MainActivity : AppCompatActivity() {
         binding.redBallView2.setOnTouchListener { v, event ->
             state.onRedBallTouch(v, event)
         }
+
+        binding.powerSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (!GlobalApplication.isScreenTouchMode && progress != 0) {
+                    val length = progress.toFloat() / 100 * MAX_GUIDELINE_LENGTH
+                    mainViewModel.guideline.setLength(length)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                GlobalApplication.isScreenTouchMode = false
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                GlobalApplication.isScreenTouchMode = true
+            }
+        })
 
         binding.mainButton.setOnClickListener {
             state.onMainButtonClick()

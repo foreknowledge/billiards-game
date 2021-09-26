@@ -20,6 +20,8 @@ fun LineCanvasView.setGuideline(start: Point, end: Point) {
 
 @BindingAdapter("guidelineStart", "guidelineEnd")
 fun SeekBar.setPower(start: Point, end: Point) {
+    if (!GlobalApplication.isScreenTouchMode) return
+
     val length = (start - end).size()
     progress = (length / MAX_GUIDELINE_LENGTH * 100).toInt()
 }
