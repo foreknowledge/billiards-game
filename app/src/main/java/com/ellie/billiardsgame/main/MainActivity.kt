@@ -318,7 +318,7 @@ class MainActivity : AppCompatActivity() {
             val velocity = mainViewModel.guideline.velocity
 
             // 공의 속도가 0이 아닌 경우, 시뮬레이션 시작 & 실행 모드로 변경
-            if (velocity.x * velocity.y != 0f) {
+            if (velocity.size() != 0f) {
                 mainViewModel.startSimulation(velocity)
                 mainViewModel.changeGameMode(GameMode.EXECUTE)
             }

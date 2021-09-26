@@ -28,18 +28,25 @@ class Guideline {
     private val dy get() = endPoint.y - startPoint.y
 
     private val dxSign get() = if (dx < 0) (-1) else 1
+    private val dySign get() = if (dy < 0) (-1) else 1
 
     val velocity: Point get() {
         // 비율 = 현재 길이 / 최대 길이
         val ratio = length / MAX_GUIDELINE_LENGTH
-        // 안내선의 기울기
-        val slope = if (dx == 0f) 0f else dy / dx
 
-        // 비율에 따른 x, y 속도 계산
-        val velocityX = dxSign * sqrt((MAX_POWER * ratio).pow(2) / (1 + slope.pow(2)))
-        val velocityY = slope * velocityX
+        return if (dx != 0f) {
+            // 안내선의 기울기
+            val slope = if (dx == 0f) 0f else dy / dx
 
-        return Point(velocityX, velocityY)
+            // 비율에 따른 x, y 속도 계산
+            val velocityX = dxSign * sqrt((MAX_POWER * ratio).pow(2) / (1 + slope.pow(2)))
+            val velocityY = slope * velocityX
+
+            Point(velocityX, velocityY)
+        } else {
+            val velocityY = dySign * MAX_POWER * ratio
+            Point(0f, velocityY)
+        }
     }
 
     fun setPoints(start: Point, end: Point) {
