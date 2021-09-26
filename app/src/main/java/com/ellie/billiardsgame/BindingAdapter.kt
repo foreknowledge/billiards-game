@@ -28,6 +28,9 @@ fun SeekBar.setPower(start: Point, end: Point) {
 fun SeekBar.setDirection(start: Point, end: Point) {
     val v1 = Point(0f, 1f)
     val v2 = end - start
+
+    if (v2.size() == 0f) return
+
     var theta = acos((v1 * v2) / (v1.size() * v2.size()))
 
     if (v2.x > 0)
