@@ -23,7 +23,7 @@ fun SeekBar.setPower(start: Point, end: Point) {
     if (!GlobalApplication.isScreenTouchMode) return
 
     val length = (start - end).size()
-    progress = (length / MAX_GUIDELINE_LENGTH * 100).toInt()
+    progress = (length / MAX_GUIDELINE_LENGTH * MAX_POWER_VALUE).toInt()
 }
 
 @BindingAdapter("startPoint", "endPoint")
@@ -40,5 +40,5 @@ fun SeekBar.setDirection(start: Point, end: Point) {
     if (v2.x > 0)
         theta = (2 * Math.PI).toFloat() - theta
 
-    progress = (theta * 100 / (2 * Math.PI)).toInt()
+    progress = (theta * MAX_DIRECTION_VALUE / (2 * Math.PI)).toInt()
 }

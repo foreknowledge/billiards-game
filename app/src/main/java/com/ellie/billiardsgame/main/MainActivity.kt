@@ -199,7 +199,7 @@ class MainActivity : AppCompatActivity() {
         binding.directionSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (!GlobalApplication.isScreenTouchMode) {
-                    val theta = progress.toDouble() * (2 * Math.PI) / 100
+                    val theta = progress.toDouble() * (2 * Math.PI) / MAX_DIRECTION_VALUE
                     mainViewModel.guideline.setDirection(theta)
                 }
             }
@@ -216,7 +216,7 @@ class MainActivity : AppCompatActivity() {
         binding.powerSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (!GlobalApplication.isScreenTouchMode && progress != 0) {
-                    val length = progress.toFloat() / 100 * MAX_GUIDELINE_LENGTH
+                    val length = progress.toFloat() / MAX_POWER_VALUE * MAX_GUIDELINE_LENGTH
                     mainViewModel.guideline.setLength(length)
                 }
             }
