@@ -69,12 +69,14 @@ class Guideline {
      * 안내선의 방향을 유지한 채 길이를 변경한다.
      */
     fun setLength(length: Float) {
-        if (startPoint == endPoint) return
+        val direction =
+            if (startPoint == endPoint) Point(0f, -1f)
+            else endPoint - startPoint
 
         val limitedLength = min(length, MAX_GUIDELINE_LENGTH)
 
         // 안내선을 길만큼 scaling 한다.
-        val lengthVector = (endPoint - startPoint).normalize() * limitedLength
+        val lengthVector = direction.normalize() * limitedLength
 
         // start point 에서 자른 안내선 길이만큼 더한 end point 를 적용한다.
         _end.postValue(startPoint + lengthVector)
