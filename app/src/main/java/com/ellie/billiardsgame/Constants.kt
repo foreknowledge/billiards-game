@@ -11,8 +11,8 @@ const val FRAME_DURATION_MS = 10L
 const val MAX_GUIDELINE_LENGTH = 1000f
 
 // 최대 방향/세기 조절값
-const val MAX_DIRECTION_VALUE = 100
-const val MAX_POWER_VALUE = 100
+const val MAX_DIRECTION_VALUE = 500
+const val MAX_POWER_VALUE = 500
 
 // 공의 최대 속력
 const val MAX_POWER = FRAME_DURATION_MS * 5f

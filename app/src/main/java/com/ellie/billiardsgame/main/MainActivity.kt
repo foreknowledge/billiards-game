@@ -196,6 +196,7 @@ class MainActivity : AppCompatActivity() {
             state.onRedBallTouch(v, event)
         }
 
+        binding.directionSlider.max = MAX_DIRECTION_VALUE
         binding.directionSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (!GlobalApplication.isScreenTouchMode) {
@@ -213,6 +214,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        binding.powerSlider.max = MAX_DIRECTION_VALUE
         binding.powerSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (!GlobalApplication.isScreenTouchMode && progress != 0) {
