@@ -16,7 +16,7 @@ object CollisionCalculator {
     /**
      * 충돌한 공 2개의 이후 속도를 계산해 적용한다.
      */
-    fun applyCollisionVelocity(ballA: Ball, ballB: Ball) {
+    fun calculateBallsVelocity(ballA: Ball, ballB: Ball): Pair<Point, Point> {
         // A의 힘
         val powerA = Point(ballA.dx, ballA.dy)
         // B의 힘
@@ -41,9 +41,7 @@ object CollisionCalculator {
         // B의 알짜 힘
         val velocityB = normalBProjectionVector + centerAProjectionVector
 
-        // apply
-        ballA.setVelocity(velocityA.x, velocityA.y)
-        ballB.setVelocity(velocityB.x, velocityB.y)
+        return Pair(velocityA, velocityB)
     }
 
     //----------------------------------------------------------

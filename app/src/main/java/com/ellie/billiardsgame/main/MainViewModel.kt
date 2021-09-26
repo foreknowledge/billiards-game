@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ellie.billiardsgame.*
 import com.ellie.billiardsgame.model.Ball
-import com.ellie.billiardsgame.model.Boundary
+import com.ellie.billiardsgame.model.Guideline
 import com.ellie.billiardsgame.model.Point
 import java.util.concurrent.Executors
 import kotlin.math.abs
@@ -15,13 +15,8 @@ import kotlin.math.abs
  * View를 위한 데이터를 조작한다.
  */
 class MainViewModel : ViewModel() {
-
-    //----------------------------------------------------------
-    // Instance data.
-    //
-
-    // 게임 모드를 내부에서 변경하기 위한 변수
     private val _curGameMode = MutableLiveData(GameMode.READY)
+    val curGameMode: LiveData<GameMode> = _curGameMode
 
     // 스레드를 실행하는 executor
     private val executor = Executors.newFixedThreadPool(3)
@@ -29,64 +24,30 @@ class MainViewModel : ViewModel() {
     // 시뮬레이션 실행을 제어하는 변수
     private var isSimulating = false
 
-    // 당구공들을 관리하는 배열
-    private val balls = listOf(Ball(), Ball(), Ball())
+    val guideline = Guideline()
+
+    private var boundary: Rect = Rect()
+
+    val whiteBall = Ball()
+    val redBall1 = Ball()
+    val redBall2 = Ball()
+    private val balls = listOf(whiteBall, redBall1, redBall2)
 
     // 당구공들의 시작 위치를 가지고 있는 배열
-    private val homePositions = listOf(Point(), Point(), Point())
-
-    // 공의 충돌 관련 작업을 담당
-    private val ballCollisionManager = BallCollisionManager(balls)
-
-    // 각 공의 Reference
-    private val whiteBall: Ball = balls[WHITE]
-    private val redBall1: Ball = balls[RED1]
-    private val redBall2: Ball = balls[RED2]
-
-    //----------------------------------------------------------
-    // Public interface.
-    //
-
-    // 게임 모드가 변경되었을 때 외부에서 관찰(Observing)하기 위한 변수
-    val curGameMode: LiveData<GameMode> = _curGameMode
-
-    // 각 공의 위치
-    val whiteBallPosition = whiteBall.point
-    val redBall1Position = redBall1.point
-    val redBall2Position = redBall2.point
+    private val startBallPositions = listOf(Point(), Point(), Point())
 
     /**
      * 당구대의 Boundary 데이터를 설정한다.
      */
-    fun setBoundary(top: Int, right: Int, bottom: Int, left: Int) {
-        ballCollisionManager.setBoundary(Boundary(Rect(left, top, right, bottom)))
+    fun setBoundary(left: Int, top: Int, right: Int, bottom: Int) {
+        val diameter = GlobalApplication.ballDiameter.toInt()
+        boundary = Rect(left, top, right - diameter, bottom - diameter)
     }
 
-    /**
-     * 당구공의 위치를 업데이트 한다.
-     * @param ballId ball을 구별하는 id값
-     */
-    fun updateBall(ballId: Int, x: Float, y: Float) {
-        balls[ballId].update(Point(x, y))
-    }
-
-    /**
-     * 당구공의 위치를 충돌을 고려해 업데이트한다.
-     */
-    fun updateBallPosition(ballId: Int, x: Float, y: Float) {
-        ballCollisionManager.updateBallConsideringTheConflict(ballId, x, y)
-    }
-
-    /**
-     * 게임 모드를 변경한다.
-     */
     fun changeGameMode(gameMode: GameMode) {
         _curGameMode.postValue(gameMode)
     }
 
-    /**
-     * 당구 시뮬레이션을 시작한다.
-     */
     fun startSimulation(velocity: Point) {
         // 공의 초기 속도 설정
         initAllBallsVelocity(velocity)
@@ -113,9 +74,6 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    /**
-     * 시뮬레이션을 취소한다.
-     */
     fun cancelSimulation() {
         // 시뮬레이션 종료
         isSimulating = false
@@ -124,13 +82,45 @@ class MainViewModel : ViewModel() {
         restoreBallPositions()
     }
 
+    /**
+     * 당구공의 위치를 충돌을 고려해 업데이트한다.
+     */
+    fun Ball.updatePosition(x: Float, y: Float) {
+        val nextPoint = CollisionDetector.getAdjustedPointToBound(x, y, boundary)
+
+        if (nextPoint.x != x) changeDirectionX()
+        if (nextPoint.y != y) changeDirectionY()
+
+        val collidedBall = getCollidedBall(this, nextPoint)
+        if (collidedBall != null){
+            // 충돌한 경우
+            val (velocity1, velocity2) = CollisionCalculator.calculateBallsVelocity(this, collidedBall)
+            this.setVelocity(velocity1.x, velocity1.y)
+            collidedBall.setVelocity(velocity2.x, velocity2.y)
+        } else {
+            // 충돌하지 않은 경우
+            this.update(nextPoint)
+        }
+    }
+
     //----------------------------------------------------------
     // Internal support interface.
     //
 
-    /**
-     * 공들의 시작 속도를 설정한다.
-     */
+    private fun getCollidedBall(ball: Ball, position: Point): Ball? {
+        // 모든 공을 돌면서 확인
+        balls.forEach {
+            // 자기 자신이면 Pass
+            if (it == ball)
+                return@forEach
+            if (CollisionDetector.isBallCollided(position, it.point.value!!))
+                return it
+        }
+
+        // 충돌한 공 없으면 null 반환
+        return null
+    }
+
     private fun initAllBallsVelocity(velocity: Point) {
         // 흰 공은 시작 속도를 가진 상태
         whiteBall.setVelocity(velocity.x, velocity.y)
@@ -140,30 +130,19 @@ class MainViewModel : ViewModel() {
         redBall2.setVelocity(0f, 0f)
     }
 
-    /**
-     * 현재 공들의 위치를 저장한다.
-     */
     private fun captureBallPositions() {
         for (i in balls.indices) {
-            homePositions[i].update(balls[i].x, balls[i].y)
+            startBallPositions[i].update(balls[i].x, balls[i].y)
         }
     }
 
-    /**
-     * 모든 공을 움직인다.
-     */
     private fun moveAllBalls() {
-        for (i in balls.indices) {
-            with (balls[i]) {
-                decreaseVelocity()
-                ballCollisionManager.updateBallConsideringTheConflict(i, nextX, nextY)
-            }
+        balls.forEach {
+            it.decreaseVelocity()
+            it.updatePosition(it.nextX, it.nextY)
         }
     }
 
-    /**
-     * 모든 공이 멈추었는지 확인한다.
-     */
     private fun noMovingBall(): Boolean {
         balls.forEach { ball ->
             if (abs(ball.dx) >= STOP_THRESHOLD || abs(ball.dy) >= STOP_THRESHOLD) {
@@ -176,12 +155,9 @@ class MainViewModel : ViewModel() {
         return true
     }
 
-    /**
-     * 모든 공을 원 위치로 되돌린다.
-     */
     private fun restoreBallPositions() {
         for (i in balls.indices) {
-            balls[i].update(homePositions[i])
+            balls[i].update(startBallPositions[i])
         }
     }
 }

@@ -1,22 +1,24 @@
 package com.ellie.billiardsgame.main
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
-import android.view.GestureDetector
-import android.view.MotionEvent
-import android.view.Window
-import android.view.WindowManager
+import android.view.*
+import android.widget.SeekBar
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GestureDetectorCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.ellie.billiardsgame.*
-import com.ellie.billiardsgame.customview.BallView
 import com.ellie.billiardsgame.databinding.ActivityMainBinding
 import com.ellie.billiardsgame.model.Point
-import kotlin.math.hypot
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * 당구 게임은 3가지 게임 모드로 동작한다. (편집 모드 - 준비 모드 - 실행 모드)
@@ -49,10 +51,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val binding: ActivityMainBinding by lazy {
-        // Status Bar 없는 화면 설정
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
-
         DataBindingUtil.setContentView(this, R.layout.activity_main)
     }
 
@@ -65,8 +63,6 @@ class MainActivity : AppCompatActivity() {
 
         // ActivityMainBinding 초기화
         initActivityMainBinding()
-        // View가 화면에 그려졌을 때 리스너 추가
-        addGlobalLayoutListener()
 
         // ViewModel의 데이터 변경 관찰(Observing)
         observeViewModelData()
@@ -74,13 +70,20 @@ class MainActivity : AppCompatActivity() {
         setViewListeners()
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            hideSystemUI()
+
+            // View가 화면에 그려졌을 때 리스너 추가
+            addGlobalLayoutListener()
+        }
+    }
+
     //----------------------------------------------------------
     // Internal support interface.
     //
 
-    /**
-     * Data Binding 인스턴스를 초기화한다.
-     */
     private fun initActivityMainBinding() {
         binding.lifecycleOwner = this
         binding.run {
@@ -88,31 +91,59 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * View가 화면에 그려졌을 때 콜백 리스너를 추가한다.
-     */
-    private fun addGlobalLayoutListener() {
-        binding.parentLayout.viewTreeObserver.addOnGlobalLayoutListener {
-            // ViewModel의 데이터 초기화
-            initDataInViewModel()
+    private fun hideSystemUI() {
+        // Enables regular immersive mode.
+        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
+        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.setDecorFitsSystemWindows(false)
+            WindowInsetsControllerCompat(window, binding.root).let { controller ->
+                controller.hide(WindowInsetsCompat.Type.systemBars())
+                controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else {
+            window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+                    or View.SYSTEM_UI_FLAG_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
         }
     }
 
-    /**
-     * ViewModel의 데이터를 초기화한다.
-     */
+    private fun addGlobalLayoutListener() {
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+                // ViewModel의 데이터 초기화
+                initDataInViewModel()
+            }
+        })
+    }
+
     private fun initDataInViewModel() {
         mainViewModel.run {
             // 공의 위치 초기화
             with(binding) {
-                updateBall(WHITE, whiteBallView.x, whiteBallView.y)
-                updateBall(RED1, redBallView1.x, redBallView1.y)
-                updateBall(RED2, redBallView2.x, redBallView2.y)
+                whiteBall.update(Point(whiteBallView.x, whiteBallView.y))
+                redBall1.update(Point(redBallView1.x, redBallView1.y))
+                redBall2.update(Point(redBallView2.x, redBallView2.y))
             }
 
             // 당구대 경계 초기화
             with (binding.poolTableView) {
-                setBoundary(top, right, bottom, left)
+                setBoundary(left, top, right, bottom)
+            }
+
+            // 안내선 초기화
+            CoroutineScope(Dispatchers.Main).launch {
+                val startPoint = Point(
+                    mainViewModel.whiteBall.centerX,
+                    mainViewModel.whiteBall.centerY)
+                val quarterLength = MAX_GUIDELINE_LENGTH / 4
+                val endPoint = startPoint + Point(0f, -quarterLength)
+                mainViewModel.guideline.setPoints(startPoint, endPoint)
             }
         }
     }
@@ -138,35 +169,71 @@ class MainActivity : AppCompatActivity() {
         // 변경된 모드에 따라 Button UI 변경
         state.changeButtonUI()
 
-        // 기존에 있던 안내선 지우기
-        binding.lineDrawer.removeLine()
+        // 안내선 초기화
+        if (mode != GameMode.READY) {
+            // 안내선 지우기
+            binding.lineDrawer.removeLine()
+        } else {
+            // 안내선 다시 그리기
+            val startPoint = Point(
+                mainViewModel.whiteBall.centerX,
+                mainViewModel.whiteBall.centerY
+            )
+            mainViewModel.guideline.resetStartPoint(startPoint)
+        }
     }
 
-    /**
-     * View에 리스너를 설정한다.
-     */
     private fun setViewListeners() {
-        // 흰 공 터치 리스너 설정
         binding.whiteBallView.setOnTouchListener { _, event ->
             state.onWhiteBallTouch(event)
         }
 
-        // 빨간 공 터치 리스너 설정
         binding.redBallView1.setOnTouchListener { v, event ->
-            state.onRedBallTouch(v as BallView, event)
+            state.onRedBallTouch(v, event)
         }
 
-        // 빨간 공 터치 리스너 설정
         binding.redBallView2.setOnTouchListener { v, event ->
-            state.onRedBallTouch(v as BallView, event)
+            state.onRedBallTouch(v, event)
         }
 
-        // 메인 버튼 클릭 리스너 설정
+        binding.directionSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (!GlobalApplication.isScreenTouchMode) {
+                    val theta = progress.toDouble() * (2 * Math.PI) / 100
+                    mainViewModel.guideline.setDirection(theta)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                GlobalApplication.isScreenTouchMode = false
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                GlobalApplication.isScreenTouchMode = true
+            }
+        })
+
+        binding.powerSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (!GlobalApplication.isScreenTouchMode && progress != 0) {
+                    val length = progress.toFloat() / 100 * MAX_GUIDELINE_LENGTH
+                    mainViewModel.guideline.setLength(length)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                GlobalApplication.isScreenTouchMode = false
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                GlobalApplication.isScreenTouchMode = true
+            }
+        })
+
         binding.mainButton.setOnClickListener {
             state.onMainButtonClick()
         }
 
-        // Fling 버튼 클릭 리스너 설정
         binding.flingButton.setOnClickListener {
             // toggle
             flingMode = !flingMode
@@ -208,24 +275,12 @@ class MainActivity : AppCompatActivity() {
         // 메인 버튼 색상
         abstract val mainBtnColor: Int
 
-        /**
-         * 메인 버튼 클릭 시 호출된다.
-         */
         abstract fun onMainButtonClick()
 
-        /**
-         * 흰 공 터치 시 호출된다.
-         */
         abstract fun onWhiteBallTouch(event: MotionEvent): Boolean
 
-        /**
-         * 빨간 공 터치 시 호출된다.
-         */
-        abstract fun onRedBallTouch(ballView: BallView, event: MotionEvent): Boolean
+        abstract fun onRedBallTouch(ballView: View, event: MotionEvent): Boolean
 
-        /**
-         * 메인 버튼 UI를 변경한다.
-         */
         fun changeButtonUI() {
             binding.mainButton.run {
                 text = mainBtnText
@@ -243,7 +298,6 @@ class MainActivity : AppCompatActivity() {
         // Instance data.
         //
 
-        // 빨간 공 Gesture Detector
         private val redBallGestureDetector by lazy {
             GestureDetectorCompat(this@MainActivity, object: GestureDetector.SimpleOnGestureListener() {
                 override fun onDoubleTap(e: MotionEvent?): Boolean {
@@ -253,7 +307,6 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        // 흰 공 Gesture Detector
         private val whiteBallGestureDetector by lazy {
             GestureDetectorCompat(this@MainActivity, object: GestureDetector.SimpleOnGestureListener() {
                 override fun onDoubleTap(e: MotionEvent?): Boolean {
@@ -283,7 +336,7 @@ class MainActivity : AppCompatActivity() {
                  * 초기 속도가 최대 속도를 넘어가면 제한한다.
                  */
                 private fun applyMaxVelocity(velocity: Point) {
-                    val velocitySize = hypot(velocity.x, velocity.y)
+                    val velocitySize = velocity.size()
                     if (velocitySize > MAX_POWER) {
                         // 최대 속도를 넘어가면 비율에 따른 x, y 속도 계산
                         val ratio = MAX_POWER / velocitySize
@@ -294,10 +347,6 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        //----------------------------------------------------------
-        // Public interface.
-        //
-
         override val mainBtnText: String by lazy { this@MainActivity.getString(R.string.btn_shot) }
         override val mainBtnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorShotButton, null) }
 
@@ -306,10 +355,10 @@ class MainActivity : AppCompatActivity() {
          */
         override fun onMainButtonClick() {
             // 안내선의 길이, 방향에 따라 초기 공 속도 계산
-            val velocity = binding.lineDrawer.getVelocity()
+            val velocity = mainViewModel.guideline.velocity
 
             // 공의 속도가 0이 아닌 경우, 시뮬레이션 시작 & 실행 모드로 변경
-            if (velocity.x * velocity.y != 0f) {
+            if (velocity.size() != 0f) {
                 mainViewModel.startSimulation(velocity)
                 mainViewModel.changeGameMode(GameMode.EXECUTE)
             }
@@ -319,15 +368,20 @@ class MainActivity : AppCompatActivity() {
             whiteBallGestureDetector.onTouchEvent(event)
             if (!flingMode) {
                 // fling 모드가 아닌 경우, 안내선 보여주기
-                with (binding.whiteBallView) {
-                    binding.lineDrawer.drawLine(centerX, centerY, event.rawX, event.rawY)
+                with(binding.lineDrawer) {
+                    val whiteBallCenter = Point(
+                        mainViewModel.whiteBall.centerX,
+                        mainViewModel.whiteBall.centerY
+                    )
+                    val endPoint = Point(event.rawX - x, event.rawY - y)
+                    mainViewModel.guideline.setPoints(whiteBallCenter, endPoint)
                 }
             }
 
             return true
         }
 
-        override fun onRedBallTouch(ballView: BallView, event: MotionEvent): Boolean {
+        override fun onRedBallTouch(ballView: View, event: MotionEvent): Boolean {
             redBallGestureDetector.onTouchEvent(event)
 
             return true
@@ -338,11 +392,6 @@ class MainActivity : AppCompatActivity() {
      * 편집 모드일 때 UI Event Handler.
      */
     inner class EditState : State() {
-
-        //----------------------------------------------------------
-        // Public interface.
-        //
-
         override val mainBtnText: String by lazy { this@MainActivity.getString(R.string.btn_ok) }
         override val mainBtnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorOKButton, null) }
 
@@ -356,30 +405,31 @@ class MainActivity : AppCompatActivity() {
 
         override fun onWhiteBallTouch(event: MotionEvent): Boolean {
             if (event.action == MotionEvent.ACTION_MOVE) {
-                val x = event.rawX - binding.whiteBallView.radius
-                val y = event.rawY - binding.whiteBallView.radius
+                val ballRadius = mainViewModel.whiteBall.radius
+                val x = event.rawX - ballRadius
+                val y = event.rawY - ballRadius
 
                 // 터치 위치에 따라 공 위치 변경
                 with(mainViewModel) {
-                    updateBallPosition(WHITE, x, y)
+                    whiteBall.updatePosition(x, y)
                 }
             }
 
             return true
         }
 
-        override fun onRedBallTouch(ballView: BallView, event: MotionEvent): Boolean {
+        override fun onRedBallTouch(ballView: View, event: MotionEvent): Boolean {
             if (event.action == MotionEvent.ACTION_MOVE) {
-                val x = event.rawX - ballView.radius
-                val y = event.rawY - ballView.radius
+                val ballRadius = mainViewModel.whiteBall.radius
+                val x = event.rawX - ballRadius
+                val y = event.rawY - ballRadius
 
                 // 터치 위치에 따라 해당 공 위치 변경
                 with(mainViewModel) {
-                    if (ballView.id == R.id.redBallView1) {
-                        updateBallPosition(RED1, x, y)
-                    } else {
-                        updateBallPosition(RED2, x, y)
-                    }
+                    if (ballView.id == R.id.redBallView1)
+                        redBall1.updatePosition(x, y)
+                    else
+                        redBall2.updatePosition(x, y)
                 }
             }
 
@@ -391,11 +441,6 @@ class MainActivity : AppCompatActivity() {
      * 실행 모드일 때 UI Event Handler.
      */
     inner class ExecuteState : State() {
-
-        //----------------------------------------------------------
-        // Public interface.
-        //
-
         override val mainBtnText: String by lazy { this@MainActivity.getString(R.string.btn_cancel) }
         override val mainBtnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorCancelButton, null) }
 
@@ -412,6 +457,6 @@ class MainActivity : AppCompatActivity() {
 
         override fun onWhiteBallTouch(event: MotionEvent) = false
 
-        override fun onRedBallTouch(ballView: BallView, event: MotionEvent) = false
+        override fun onRedBallTouch(ballView: View, event: MotionEvent) = false
     }
 }
