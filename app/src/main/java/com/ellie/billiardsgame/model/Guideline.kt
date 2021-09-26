@@ -52,6 +52,16 @@ class Guideline {
     }
 
     /**
+     * startPoint를 이동한다.
+     */
+    fun resetStartPoint(start: Point) {
+        val vector = endPoint - startPoint
+
+        _start.postValue(start)
+        _end.postValue(start + vector)
+    }
+
+    /**
      * 최대 길이를 고려해 endPoint를 계산해서 반환한다.
      */
     private fun calcEndPoint(start: Point, end: Point): Point {

@@ -179,9 +179,7 @@ class MainActivity : AppCompatActivity() {
                 mainViewModel.whiteBall.centerX,
                 mainViewModel.whiteBall.centerY
             )
-            val quarterLength = MAX_GUIDELINE_LENGTH / 4
-            val endPoint = startPoint + Point(0f, -quarterLength)
-            mainViewModel.guideline.setPoints(startPoint, endPoint)
+            mainViewModel.guideline.resetStartPoint(startPoint)
         }
     }
 
