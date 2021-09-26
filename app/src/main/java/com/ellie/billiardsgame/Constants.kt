@@ -8,7 +8,7 @@ package com.ellie.billiardsgame
 const val FRAME_DURATION_MS = 10L
 
 // 안내선의 최대 길이
-const val MAX_GUIDELINE_LENGTH = 800f
+const val MAX_GUIDELINE_LENGTH = 1000f
 
 // 공의 최대 속력
 const val MAX_POWER = FRAME_DURATION_MS * 5f
