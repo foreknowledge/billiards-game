@@ -340,6 +340,8 @@ class MainActivity : AppCompatActivity() {
          * 버튼(Shot) 클릭 Callback.
          */
         override fun onMainButtonClick() {
+            if (flingMode) return
+
             // 안내선의 길이, 방향에 따라 초기 공 속도 계산
             val velocity = mainViewModel.guideline.velocity
 
