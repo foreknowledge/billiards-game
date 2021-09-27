@@ -5,8 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.SeekBar
-import androidx.annotation.ColorInt
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.WindowInsetsCompat
@@ -236,29 +234,11 @@ class MainActivity : AppCompatActivity() {
             state.onMainButtonClick()
         }
 
-        binding.flingButton.setOnClickListener {
-            // toggle
-            flingMode = !flingMode
-
-            // Fling Mode에 따라 Fling 버튼의 UI 변경
-            if (flingMode) {
-                changFlingButtonState(R.string.btn_fling_on, getColor(R.color.colorOnButton))
-            } else {
-                changFlingButtonState(R.string.btn_fling_off, getColor(R.color.colorDefaultButton))
-            }
+        binding.flingSwitch.setOnClickListener {
+            flingMode = binding.flingSwitch.isChecked
 
             // 기존의 안내선을 지운다.
             binding.lineDrawer.removeLine()
-        }
-    }
-
-    /**
-     * Fling 버튼의 텍스트, 버튼 색상을 바꾼다.
-     */
-    private fun changFlingButtonState(@StringRes textResId: Int, @ColorInt color: Int) {
-        binding.flingButton.run {
-            text = getText(textResId)
-            setBackgroundColor(color)
         }
     }
 

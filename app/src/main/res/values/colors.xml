@@ -10,7 +10,6 @@
     <color name="colorRedBall">@android:color/holo_red_light</color>
 
     <color name="colorDefaultButton">#EAEAEA</color>
-    <color name="colorOnButton">#43D0EF</color>
 
     <color name="colorShotButton">@color/colorDefaultButton</color>
     <color name="colorCancelButton">#FA5F66</color>
