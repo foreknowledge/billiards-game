@@ -199,7 +199,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.directionSlider.max = MAX_DIRECTION_VALUE
-        binding.directionSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+        binding.directionSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (!GlobalApplication.isScreenTouchMode) {
                     val theta = progress.toDouble() * (2 * Math.PI) / MAX_DIRECTION_VALUE
@@ -217,7 +217,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         binding.powerSlider.max = MAX_DIRECTION_VALUE
-        binding.powerSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+        binding.powerSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (!GlobalApplication.isScreenTouchMode && progress != 0) {
                     val length = progress.toFloat() / MAX_POWER_VALUE * MAX_GUIDELINE_LENGTH
