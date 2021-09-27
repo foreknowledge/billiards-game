@@ -279,9 +279,9 @@ class MainActivity : AppCompatActivity() {
 
         abstract fun onMainButtonClick()
 
-        abstract fun onWhiteBallTouch(event: MotionEvent): Boolean
+        open fun onWhiteBallTouch(event: MotionEvent): Boolean = false
 
-        abstract fun onRedBallTouch(ballView: View, event: MotionEvent): Boolean
+        open fun onRedBallTouch(ballView: View, event: MotionEvent): Boolean = false
 
         fun changeButtonUI() {
             binding.mainButton.run {
@@ -456,9 +456,5 @@ class MainActivity : AppCompatActivity() {
             // 준비 모드로 변경
             mainViewModel.changeGameMode(GameMode.READY)
         }
-
-        override fun onWhiteBallTouch(event: MotionEvent) = false
-
-        override fun onRedBallTouch(ballView: View, event: MotionEvent) = false
     }
 }
