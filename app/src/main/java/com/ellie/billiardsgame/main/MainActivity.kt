@@ -167,17 +167,21 @@ class MainActivity : AppCompatActivity() {
         // 변경된 모드에 따라 Button UI 변경
         state.changeButtonUI()
 
-        // 안내선 초기화
-        if (mode != GameMode.READY) {
-            // 안내선 지우기
-            binding.lineDrawer.removeLine()
-        } else {
-            // 안내선 다시 그리기
+        // 안내선 UI 업데이트
+        updateGuidelineUI()
+    }
+
+    private fun updateGuidelineUI() {
+        if (state is ReadyState && !flingMode) {
+            // 현재 흰 공 위치에 맞춰 안내선을 다시 그린다.
             val startPoint = Point(
                 mainViewModel.whiteBall.centerX,
                 mainViewModel.whiteBall.centerY
             )
             mainViewModel.guideline.resetStartPoint(startPoint)
+        } else {
+            // 기존의 안내선을 지운다.
+            binding.lineDrawer.removeLine()
         }
     }
 
@@ -237,8 +241,8 @@ class MainActivity : AppCompatActivity() {
         binding.flingSwitch.setOnClickListener {
             flingMode = binding.flingSwitch.isChecked
 
-            // 기존의 안내선을 지운다.
-            binding.lineDrawer.removeLine()
+            // 안내선 UI 업데이트
+            updateGuidelineUI()
         }
     }
 
