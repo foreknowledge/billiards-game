@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity() {
                 mainViewModel.whiteBall.centerX,
                 mainViewModel.whiteBall.centerY
             )
-            mainViewModel.guideline.resetStartPoint(startPoint)
+            mainViewModel.guideline.setStartPoint(startPoint)
         } else {
             // 기존의 안내선을 지운다.
             binding.lineDrawer.removeLine()
@@ -196,6 +196,20 @@ class MainActivity : AppCompatActivity() {
 
         binding.redBallView2.setOnTouchListener { v, event ->
             state.onRedBallTouch(v, event)
+        }
+
+        binding.poolTableView.setOnTouchListener { _, event ->
+            if (state is ReadyState && !flingMode) {
+                // fling 모드가 아닌 경우, 안내선 보여주기
+                with(binding.lineDrawer) {
+                    val endPoint = Point(event.rawX - x, event.rawY - y)
+                    mainViewModel.guideline.setEndPoint(endPoint)
+                }
+
+                true
+            } else {
+                false
+            }
         }
 
         binding.directionSlider.max = MAX_DIRECTION_VALUE
@@ -354,17 +368,6 @@ class MainActivity : AppCompatActivity() {
 
         override fun onWhiteBallTouch(event: MotionEvent): Boolean {
             whiteBallGestureDetector.onTouchEvent(event)
-            if (!flingMode) {
-                // fling 모드가 아닌 경우, 안내선 보여주기
-                with(binding.lineDrawer) {
-                    val whiteBallCenter = Point(
-                        mainViewModel.whiteBall.centerX,
-                        mainViewModel.whiteBall.centerY
-                    )
-                    val endPoint = Point(event.rawX - x, event.rawY - y)
-                    mainViewModel.guideline.setPoints(whiteBallCenter, endPoint)
-                }
-            }
 
             return true
         }

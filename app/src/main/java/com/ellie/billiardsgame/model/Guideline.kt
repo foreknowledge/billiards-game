@@ -51,14 +51,15 @@ class Guideline {
         _end.postValue(calcEndPoint(start, end))
     }
 
-    /**
-     * startPoint를 이동한다.
-     */
-    fun resetStartPoint(start: Point) {
+    fun setStartPoint(start: Point) {
         val vector = endPoint - startPoint
 
         _start.postValue(start)
         _end.postValue(start + vector)
+    }
+
+    fun setEndPoint(end: Point) {
+        _end.postValue(calcEndPoint(startPoint, end))
     }
 
     /**
