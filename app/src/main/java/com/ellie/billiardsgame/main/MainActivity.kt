@@ -271,8 +271,8 @@ class MainActivity : AppCompatActivity() {
      * 게임 모드에 따라 변경할 화면 UI Event Handler를 정의한 추상 클래스.
      */
     abstract inner class State {
-        // 메인 버튼 텍스트
-        abstract val mainBtnText: String
+        // 메인 버튼 텍스트 리소스
+        abstract val mainBtnTextRes: Int
 
         // 메인 버튼 색상
         abstract val mainBtnColor: Int
@@ -285,7 +285,7 @@ class MainActivity : AppCompatActivity() {
 
         fun changeButtonUI() {
             binding.mainButton.run {
-                text = mainBtnText
+                text = this@MainActivity.getString(mainBtnTextRes)
                 setBackgroundColor(mainBtnColor)
             }
         }
@@ -349,7 +349,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        override val mainBtnText: String by lazy { this@MainActivity.getString(R.string.btn_shot) }
+        override val mainBtnTextRes: Int = R.string.btn_shot
         override val mainBtnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorShotButton, null) }
 
         /**
@@ -394,7 +394,7 @@ class MainActivity : AppCompatActivity() {
      * 편집 모드일 때 UI Event Handler.
      */
     inner class EditState : State() {
-        override val mainBtnText: String by lazy { this@MainActivity.getString(R.string.btn_ok) }
+        override val mainBtnTextRes: Int = R.string.btn_ok
         override val mainBtnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorOKButton, null) }
 
         /**
@@ -443,7 +443,7 @@ class MainActivity : AppCompatActivity() {
      * 실행 모드일 때 UI Event Handler.
      */
     inner class ExecuteState : State() {
-        override val mainBtnText: String by lazy { this@MainActivity.getString(R.string.btn_cancel) }
+        override val mainBtnTextRes: Int = R.string.btn_cancel
         override val mainBtnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorCancelButton, null) }
 
         /**
