@@ -83,12 +83,12 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@android:color/transparent"
+            app:guidelineEnd="@{viewModel.guideline.end}"
+            app:guidelineStart="@{viewModel.guideline.start}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:guidelineStart="@{viewModel.guideline.start}"
-            app:guidelineEnd="@{viewModel.guideline.end}"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/text_direction"
@@ -125,24 +125,24 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            app:endPoint="@{viewModel.guideline.end}"
             app:layout_constraintBottom_toBottomOf="@id/text_direction"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/text_direction"
             app:layout_constraintTop_toTopOf="@id/text_direction"
-            app:startPoint="@{viewModel.guideline.start}"
-            app:endPoint="@{viewModel.guideline.end}"/>
+            app:startPoint="@{viewModel.guideline.start}" />
 
         <SeekBar
             android:id="@+id/power_slider"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            app:guidelineEnd="@{viewModel.guideline.end}"
+            app:guidelineStart="@{viewModel.guideline.start}"
             app:layout_constraintBottom_toBottomOf="@id/text_power"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/text_power"
-            app:layout_constraintTop_toTopOf="@id/text_power"
-            app:guidelineStart="@{viewModel.guideline.start}"
-            app:guidelineEnd="@{viewModel.guideline.end}"/>
+            app:layout_constraintTop_toTopOf="@id/text_power" />
 
         <View
             android:id="@+id/dim_view"
@@ -151,10 +151,10 @@
             android:background="#AAFFFFFF"
             android:clickable="true"
             android:focusable="true"
-            app:layout_constraintTop_toTopOf="@id/text_direction"
             app:layout_constraintBottom_toBottomOf="@id/text_power"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="@id/text_direction" />
 
         <Button
             android:id="@+id/mainButton"
@@ -174,11 +174,11 @@
             android:layout_height="40dp"
             android:layout_margin="5dp"
             android:text="@string/text_fling"
-            android:textSize="18sp"
             android:textColor="@android:color/black"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/mainButton"/>
+            app:layout_constraintStart_toEndOf="@id/mainButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
