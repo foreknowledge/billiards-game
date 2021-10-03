@@ -173,15 +173,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateGuidelineUI() {
         if (state is ReadyState && !flingMode) {
-            // 현재 흰 공 위치에 맞춰 안내선을 다시 그린다.
+            // 현재 흰 공 위치에 맞춰 안내선을 다시 그린다. 조절바도 enable 시킨다.
             val startPoint = Point(
                 mainViewModel.whiteBall.centerX,
                 mainViewModel.whiteBall.centerY
             )
             mainViewModel.guideline.setStartPoint(startPoint)
+            binding.dimView.visibility = View.GONE
         } else {
-            // 기존의 안내선을 지운다.
+            // 안내선을 지우고 조절바도 disable 시킨다.
             binding.lineDrawer.removeLine()
+            binding.dimView.visibility = View.VISIBLE
         }
     }
 

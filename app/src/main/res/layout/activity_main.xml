@@ -11,7 +11,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@android:color/white">
 
         <View
             android:id="@+id/poolTableEdge"
@@ -142,6 +143,18 @@
             app:layout_constraintTop_toTopOf="@id/text_power"
             app:guidelineStart="@{viewModel.guideline.start}"
             app:guidelineEnd="@{viewModel.guideline.end}"/>
+
+        <View
+            android:id="@+id/dim_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#AAFFFFFF"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintTop_toTopOf="@id/text_direction"
+            app:layout_constraintBottom_toBottomOf="@id/text_power"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <Button
             android:id="@+id/mainButton"
