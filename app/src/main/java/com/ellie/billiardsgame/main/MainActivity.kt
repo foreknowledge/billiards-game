@@ -5,8 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.SeekBar
-import androidx.annotation.ColorInt
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.WindowInsetsCompat
@@ -169,17 +167,23 @@ class MainActivity : AppCompatActivity() {
         // 변경된 모드에 따라 Button UI 변경
         state.changeButtonUI()
 
-        // 안내선 초기화
-        if (mode != GameMode.READY) {
-            // 안내선 지우기
-            binding.lineDrawer.removeLine()
-        } else {
-            // 안내선 다시 그리기
+        // 안내선 UI 업데이트
+        updateGuidelineUI()
+    }
+
+    private fun updateGuidelineUI() {
+        if (state is ReadyState && !flingMode) {
+            // 현재 흰 공 위치에 맞춰 안내선을 다시 그린다. 조절바도 enable 시킨다.
             val startPoint = Point(
                 mainViewModel.whiteBall.centerX,
                 mainViewModel.whiteBall.centerY
             )
-            mainViewModel.guideline.resetStartPoint(startPoint)
+            mainViewModel.guideline.setStartPoint(startPoint)
+            binding.dimView.visibility = View.GONE
+        } else {
+            // 안내선을 지우고 조절바도 disable 시킨다.
+            binding.lineDrawer.removeLine()
+            binding.dimView.visibility = View.VISIBLE
         }
     }
 
@@ -196,8 +200,22 @@ class MainActivity : AppCompatActivity() {
             state.onRedBallTouch(v, event)
         }
 
+        binding.poolTableView.setOnTouchListener { _, event ->
+            if (state is ReadyState && !flingMode) {
+                // fling 모드가 아닌 경우, 안내선 보여주기
+                with(binding.lineDrawer) {
+                    val endPoint = Point(event.rawX - x, event.rawY - y)
+                    mainViewModel.guideline.setEndPoint(endPoint)
+                }
+
+                true
+            } else {
+                false
+            }
+        }
+
         binding.directionSlider.max = MAX_DIRECTION_VALUE
-        binding.directionSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+        binding.directionSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (!GlobalApplication.isScreenTouchMode) {
                     val theta = progress.toDouble() * (2 * Math.PI) / MAX_DIRECTION_VALUE
@@ -215,7 +233,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         binding.powerSlider.max = MAX_DIRECTION_VALUE
-        binding.powerSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+        binding.powerSlider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (!GlobalApplication.isScreenTouchMode && progress != 0) {
                     val length = progress.toFloat() / MAX_POWER_VALUE * MAX_GUIDELINE_LENGTH
@@ -236,29 +254,11 @@ class MainActivity : AppCompatActivity() {
             state.onMainButtonClick()
         }
 
-        binding.flingButton.setOnClickListener {
-            // toggle
-            flingMode = !flingMode
+        binding.flingSwitch.setOnClickListener {
+            flingMode = binding.flingSwitch.isChecked
 
-            // Fling Mode에 따라 Fling 버튼의 UI 변경
-            if (flingMode) {
-                changFlingButtonState(R.string.btn_fling_on, getColor(R.color.colorOnButton))
-            } else {
-                changFlingButtonState(R.string.btn_fling_off, getColor(R.color.colorDefaultButton))
-            }
-
-            // 기존의 안내선을 지운다.
-            binding.lineDrawer.removeLine()
-        }
-    }
-
-    /**
-     * Fling 버튼의 텍스트, 버튼 색상을 바꾼다.
-     */
-    private fun changFlingButtonState(@StringRes textResId: Int, @ColorInt color: Int) {
-        binding.flingButton.run {
-            text = getText(textResId)
-            setBackgroundColor(color)
+            // 안내선 UI 업데이트
+            updateGuidelineUI()
         }
     }
 
@@ -271,21 +271,21 @@ class MainActivity : AppCompatActivity() {
      * 게임 모드에 따라 변경할 화면 UI Event Handler를 정의한 추상 클래스.
      */
     abstract inner class State {
-        // 메인 버튼 텍스트
-        abstract val mainBtnText: String
+        // 메인 버튼 텍스트 리소스
+        abstract val mainBtnTextRes: Int
 
         // 메인 버튼 색상
         abstract val mainBtnColor: Int
 
         abstract fun onMainButtonClick()
 
-        abstract fun onWhiteBallTouch(event: MotionEvent): Boolean
+        open fun onWhiteBallTouch(event: MotionEvent): Boolean = false
 
-        abstract fun onRedBallTouch(ballView: View, event: MotionEvent): Boolean
+        open fun onRedBallTouch(ballView: View, event: MotionEvent): Boolean = false
 
         fun changeButtonUI() {
             binding.mainButton.run {
-                text = mainBtnText
+                text = this@MainActivity.getString(mainBtnTextRes)
                 setBackgroundColor(mainBtnColor)
             }
         }
@@ -349,13 +349,15 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        override val mainBtnText: String by lazy { this@MainActivity.getString(R.string.btn_shot) }
+        override val mainBtnTextRes: Int = R.string.btn_shot
         override val mainBtnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorShotButton, null) }
 
         /**
          * 버튼(Shot) 클릭 Callback.
          */
         override fun onMainButtonClick() {
+            if (flingMode) return
+
             // 안내선의 길이, 방향에 따라 초기 공 속도 계산
             val velocity = mainViewModel.guideline.velocity
 
@@ -368,17 +370,6 @@ class MainActivity : AppCompatActivity() {
 
         override fun onWhiteBallTouch(event: MotionEvent): Boolean {
             whiteBallGestureDetector.onTouchEvent(event)
-            if (!flingMode) {
-                // fling 모드가 아닌 경우, 안내선 보여주기
-                with(binding.lineDrawer) {
-                    val whiteBallCenter = Point(
-                        mainViewModel.whiteBall.centerX,
-                        mainViewModel.whiteBall.centerY
-                    )
-                    val endPoint = Point(event.rawX - x, event.rawY - y)
-                    mainViewModel.guideline.setPoints(whiteBallCenter, endPoint)
-                }
-            }
 
             return true
         }
@@ -394,7 +385,7 @@ class MainActivity : AppCompatActivity() {
      * 편집 모드일 때 UI Event Handler.
      */
     inner class EditState : State() {
-        override val mainBtnText: String by lazy { this@MainActivity.getString(R.string.btn_ok) }
+        override val mainBtnTextRes: Int = R.string.btn_ok
         override val mainBtnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorOKButton, null) }
 
         /**
@@ -443,7 +434,7 @@ class MainActivity : AppCompatActivity() {
      * 실행 모드일 때 UI Event Handler.
      */
     inner class ExecuteState : State() {
-        override val mainBtnText: String by lazy { this@MainActivity.getString(R.string.btn_cancel) }
+        override val mainBtnTextRes: Int = R.string.btn_cancel
         override val mainBtnColor: Int by lazy { this@MainActivity.resources.getColor(R.color.colorCancelButton, null) }
 
         /**
@@ -456,9 +447,5 @@ class MainActivity : AppCompatActivity() {
             // 준비 모드로 변경
             mainViewModel.changeGameMode(GameMode.READY)
         }
-
-        override fun onWhiteBallTouch(event: MotionEvent) = false
-
-        override fun onRedBallTouch(ballView: View, event: MotionEvent) = false
     }
 }
